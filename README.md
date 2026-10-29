@@ -1,6 +1,10 @@
-# Zombie Café PC
+# Zombie Cafe Plus: classic version
 
 A Windows port of Zombie Café 1.7.0 for iOS. It runs the game from your own copy of the iOS app: all pictures, sounds, text and game data are read from the `.ipa` file each time it starts, so nothing from the original is included here.
+
+This is an unofficial fan project, not made or endorsed by Capcom. You need your own copy of the game's `.ipa`.
+
+This branch is the classic version, kept as close to the original as it can be. Zombie Cafe Plus, with the extras (staff panel, undo, copy and paste, bigger cafes, in-game toxin, cheat menu), is on the `two-point` branch.
 
 ## Running it
 

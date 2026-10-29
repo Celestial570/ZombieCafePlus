@@ -18,11 +18,11 @@ public sealed class Settings
     /// <summary>The toxin exchange (the + by the toxin count): dollars a vial (the game's own rate, K 0x42d138).</summary>
     public int ToxinPrice { get; set; } = 2000;
     /// <summary>The toxin exchange: vials that can be bought a day (0: no limit).</summary>
-    public int ToxinDailyLimit { get; set; } = 5;
+    public int ToxinDailyLimit { get; set; } = 15;
     /// <summary>The Toxin Generator's price in the store, in dollars (the original sold it for real money).</summary>
     public int ToxinGeneratorPrice { get; set; } = 40000;
     /// <summary>How many Toxin Generators the cafe may have, stored ones counted (0: no limit).</summary>
-    public int ToxinGeneratorLimit { get; set; } = 2;
+    public int ToxinGeneratorLimit { get; set; } = 6;
     /// <summary>Vials each Toxin Generator makes a day (it holds 5 until collected).</summary>
     public int ToxinGeneratorPerDay { get; set; } = 5;
 

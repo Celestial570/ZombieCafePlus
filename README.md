@@ -53,9 +53,9 @@ The window can be resized; the interface keeps its layout at any size.
   | Setting | Default | What it does |
   | --- | --- | --- |
   | `ToxinPrice` | 2000 | Dollars per vial at the exchange (the original's own rate) |
-  | `ToxinDailyLimit` | 5 | Vials the exchange sells per day; it resets at midnight on the game clock |
+  | `ToxinDailyLimit` | 15 | Vials the exchange sells per day; it resets at midnight on the game clock |
   | `ToxinGeneratorPrice` | 40000 | The generator's price in the store |
-  | `ToxinGeneratorLimit` | 2 | How many generators you can own, counting ones in storage |
+  | `ToxinGeneratorLimit` | 6 | How many generators you can own, counting ones in storage |
   | `ToxinGeneratorPerDay` | 5 | Vials each generator makes per day |
 
 ## Where things are kept

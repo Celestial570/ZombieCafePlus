@@ -1,4 +1,4 @@
-# toxin exchange: the + by the toxin opens it; 5 vials bought for $10,000 uses up the day's 5 (ZC_SKIPTUTORIAL=1 ZC_HINTS=0x22,0x24,0x25,0x36,0x53 ZC_MONEY=20000)
+# toxin exchange: the + by the toxin opens it; 5 vials bought for $10,000 uses 5 of the day's 15 (ZC_SKIPTUTORIAL=1 ZC_HINTS=0x22,0x24,0x25,0x36,0x53 ZC_MONEY=20000)
 30 clickat toxin:plus
 70 clickat toxin:buy5
 100 at toxin:buy1

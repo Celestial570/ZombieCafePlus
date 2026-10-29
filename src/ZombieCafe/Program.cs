@@ -57,6 +57,15 @@ static class Program
         if (int.TryParse(Environment.GetEnvironmentVariable("ZC_HUD"), out int hud))
             settings.HudSize = Math.Clamp(hud, Settings.HudSizeMin, Settings.HudSizeMax);
         Settings.Current = settings;
+        // the settings file shows every option, the extras' new ones too
+        settings.Save();
+        // Two Point extras: the Toxin Generator in the store for cash (the original sold it for real money)
+        foreach (var d in data.Furniture)
+            if (d.Category == FurnitureCategory.ToxinGenerator && d.ForSale && d.Currency == 2)
+            {
+                d.Price = settings.ToxinGeneratorPrice;
+                d.Currency = 0;
+            }
         audio.MusicVolume = settings.MusicVolume / 100f;
         audio.EffectsVolume = settings.SfxVolume / 100f;
         GameScreen first = Arg(args, "--viewer") switch
@@ -363,7 +372,7 @@ static class Program
         {
             case "furniture":
                 foreach (var d in data.Furniture)
-                    Console.WriteLine($"{d.Id}\t{d.Category}\ttab {d.ShopTab}\tsale {d.ForSale}\tcur {d.Currency}\t{d.Price}\ttheme {d.Theme}\t{d.Width}x{d.Depth}\trot {d.B1C}\tpet {d.PetId}\tfam {d.StoveFamily}\tb42 {d.B42}\ts44 {d.S44}\t{d.Name}");
+                    Console.WriteLine($"{d.Id}\t{d.Category}\ttab {d.ShopTab}\tsale {d.ForSale}\tcur {d.Currency}\t{d.Price}\ttheme {d.Theme}\t{d.Width}x{d.Depth}\trot {d.B1C}\tpet {d.PetId}\tfam {d.StoveFamily}\tb42 {d.B42}\ts44 {d.S44}\tearns {d.B24}:{d.S26}/h cap {d.S28}\t{d.Name}");
                 break;
             case "chars":
                 foreach (var c in data.Characters)

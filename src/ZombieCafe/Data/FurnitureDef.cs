@@ -25,9 +25,10 @@ public sealed class FurnitureDef
     public string Name { get; init; } = "";
     /// <summary>Image key; with category and per-category image index gives "&lt;prefix&gt;_NNN_&lt;image&gt;.cct".</summary>
     public string Image { get; init; } = "";
-    public int Price { get; init; }
+    /// <summary>Settable for the Two Point extras (the Toxin Generator sold for cash).</summary>
+    public int Price { get; set; }
     /// <summary>0 = cash, 1 = toxin, 2 = other.</summary>
-    public byte Currency { get; init; }
+    public byte Currency { get; set; }
     public byte Width { get; init; }
     public byte Depth { get; init; }
     /// <summary>Image number: the NNN in "&lt;prefix&gt;_NNN_&lt;image&gt;.cct"; for floors the entry in tile.bin. (+0x18)</summary>

@@ -44,9 +44,23 @@ The window can be resized; the interface keeps its layout at any size.
   - Undoing a purchase refunds it in full.
   - If its experience already pushed the café up a level, you get the salvage price instead.
 
+- **Getting toxin.** The original sold toxin for real money; this version has two in-game ways instead:
+  - **Toxin exchange.** The + next to your toxin count sells vials for cash, a few a day.
+  - **Toxin Generator.** Sold in the store for cash from level 5. It sits in the yard, fills up with vials over the day (it holds 5), and you click it to collect them.
+
+  You can change the price, the daily limit and the generator settings in `settings.json` (next to the save; see below). The game writes the file when it starts. Set a limit to 0 for no limit.
+
+  | Setting | Default | What it does |
+  | --- | --- | --- |
+  | `ToxinPrice` | 2000 | Dollars per vial at the exchange (the original's own rate) |
+  | `ToxinDailyLimit` | 5 | Vials the exchange sells per day; it resets at midnight on the game clock |
+  | `ToxinGeneratorPrice` | 40000 | The generator's price in the store |
+  | `ToxinGeneratorLimit` | 2 | How many generators you can own, counting ones in storage |
+  | `ToxinGeneratorPerDay` | 5 | Vials each generator makes per day |
+
 ## Where things are kept
 
-- Saved game: `%APPDATA%\ZombieCafePC-TwoPoint\save.json` (the classic version keeps its own in `%APPDATA%\ZombieCafePC`)
+- Saved game: `%APPDATA%\ZombieCafePC-TwoPoint\save.json`; options, including the toxin settings, are in `settings.json` in the same folder (the classic version keeps its own in `%APPDATA%\ZombieCafePC`)
 - Photos taken with the chef's PHOTO button: `Pictures\ZombieCafePC`
 
 ## Not included

@@ -82,6 +82,10 @@ public sealed class PlayerState
     public DateTime? LastPlayDay { get; set; }
     public int StreakDays { get; set; }
 
+    /// <summary>The toxin exchange (a Two Point extra): the day vials were last bought, and how many that day.</summary>
+    public DateTime ToxinBoughtDay { get; set; }
+    public int ToxinBoughtToday { get; set; }
+
     /// <summary>Game +0x16c: the zombies frozen in the meat locker - off the staff, kept as they were.</summary>
     public List<Character> Frozen { get; } = new();
     /// <summary>Game +0x80: the meat locker's hooks (five to start; five more for 5 toxin, up to sixty).</summary>

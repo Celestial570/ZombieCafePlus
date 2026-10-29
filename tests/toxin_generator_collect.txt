@@ -1,0 +1,9 @@
+# Toxin Generator: twelve hours on it holds two vials; a click collects them (+2 toxin) (ZC_SKIPTUTORIAL=1 ZC_HINTS=0x22,0x24,0x25,0x36,0x53 ZC_PLACE=484:-3:7)
+40 key Zero
+70 clickat cheat:time
+100 clickat cheat:skip12h
+150 clickat msgok
+190 clickat msgok
+250 key Zero
+270 at generator
+280 clickat generator

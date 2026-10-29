@@ -34,8 +34,12 @@ public class Furniture : CafeObject
     public float StoredProgress { get; set; }
     /// <summary>+0x7a: the day a magic fridge last gave its free dish - set when bought (null: never).</summary>
     public DateTime? GiftDay { get; set; }
-    /// <summary>Earns something by itself over time (def +0x26 above zero; not the daily toxin generator).</summary>
-    public bool EarnsOverTime => Def.S26 > 0 && Def.Category != FurnitureCategory.ToxinGenerator;
+    /// <summary>Earns something by itself over time (def +0x26 above zero).</summary>
+    public bool EarnsOverTime => PerHour > 0;
+    /// <summary>
+    /// What it earns an hour: def +0x26, or for the Toxin Generator (a Two Point extra) the settings' vials a day.
+    /// </summary>
+    public float PerHour => Def.Category == FurnitureCategory.ToxinGenerator ? Settings.Current.ToxinGeneratorPerDay / 24f : Def.S26;
     /// <summary>Draw tint instead of the def's (the placement ghost: green = fits, red = does not).</summary>
     public Color? TintOverride { get; set; }
     /// <summary>+0x6c / +0x70: top-left of the sprite.</summary>
@@ -291,7 +295,7 @@ public class Furniture : CafeObject
     {
         if (!EarnsOverTime)
             return;
-        StoredProgress += dtMs * Def.S26 / 3.6e6f;
+        StoredProgress += dtMs * PerHour / 3.6e6f;
         if (StoredProgress >= 1f)
         {
             StoredProgress -= 1f;

@@ -291,9 +291,12 @@ public sealed partial class CafeScreen : GameScreen
     void HandleInput(float dt)
     {
         var mouse = Input.MousePosition;
-        if (messages.Count > 0 || question != null || bio != null || competitor != null || fridge.Visible || questsOpen || reviewOpen)
+        if (messages.Count > 0 || question != null || bio != null || competitor != null || fridge.Visible || questsOpen || reviewOpen
+            || toxinShopOpen)
         {
             pressed = false;
+            if (toxinShopOpen && Input.IsKeyPressed(KeyboardKey.Escape))
+                toxinShopOpen = false;
             return;
         }
         if (Input.IsKeyPressed(KeyboardKey.Escape) && !edit.Active)
@@ -367,6 +370,8 @@ public sealed partial class CafeScreen : GameScreen
             ? Vector2.Transform(f.SolidPoint(), WorldToWindow)
             : null;
         Vector2? Ui(Rectangle? r) => r is { } x ? Screen.ToPixelsPoint(new Vector2(x.X + x.Width / 2, x.Y + x.Height / 2)) : null;
+        if (name.StartsWith("toxin:"))
+            return name == "toxin:plus" ? Ui(toxinPlusRect) : toxinRects.TryGetValue(name[6..], out var toxinAt) ? Ui(toxinAt) : null;
         if (name.StartsWith("panel:"))
             return staffRects.TryGetValue(name[6..], out var staffAt) ? Ui(staffAt) : null;
         if (name.StartsWith("edit:"))
@@ -403,6 +408,7 @@ public sealed partial class CafeScreen : GameScreen
             "storage" => Ui(HudButton(HudStorage)),
             "zombies" => Ui(HudButton(HudZombies)),
             "tombstone" => Furn(FurnitureCategory.Tombstone),
+            "generator" => Furn(FurnitureCategory.ToxinGenerator),
             "habitat" => Furn(FurnitureCategory.Habitat),
             "pets" => Ui(HudButton(HudPets)),
             "pedia" => Ui(HudButton(HudPedia)),
@@ -898,6 +904,12 @@ public sealed partial class CafeScreen : GameScreen
             DrawStoveBar(stoveBar);
         else if (tombstoneBar != null)
             DrawTombstoneBar(tombstoneBar);
+        if (toxinShopOpen)
+        {
+            Widgets.Blocked = messages.Count > 0 || question != null || chefMessage.Visible;
+            DrawToxinShop();
+            Widgets.Blocked = false;
+        }
         staffRects.Clear();
         if (staffOpen)
         {
@@ -1248,8 +1260,9 @@ public sealed partial class CafeScreen : GameScreen
         float tx = x0 + 170;
         Widgets.Sprite(ui[UiSprites.VialMedium], tx, y, 0.7f);
         Text.DrawAnchored(p.Toxin.ToString(), tx + 18, y, 26, Anchor.Left | Anchor.VCenter, Color.White, Color.Black, 2);
-        if (Widgets.ImageButton(ui[UiSprites.ToxinPlus], tx + 80, y, 0.55f, !chefMessage.Visible))
-            messages.Enqueue((data.Strings[404], new List<string> { data.Strings[443] }, null));
+        toxinPlusRect = new Rectangle(tx + 60, y - 20, 40, 40);
+        if (Widgets.ImageButton(ui[UiSprites.ToxinPlus], tx + 80, y, 0.55f, !chefMessage.Visible && !edit.Active))
+            OpenToxinShop();
         // level star and experience bar
         float lx = MathF.Max(tx + 140, (gridRight + Screen.Width) / 2 - 150);
         Widgets.Sprite(ui[UiSprites.Star], lx, y, 1.05f);

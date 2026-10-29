@@ -14,6 +14,18 @@ public sealed class Settings
     public int HudSize { get; set; } = 100;
     public const int HudSizeMin = 60, HudSizeMax = 140;
 
+    // Two Point extras: getting toxin without the App Store. Edit settings.json to change them (0 = no limit).
+    /// <summary>The toxin exchange (the + by the toxin count): dollars a vial (the game's own rate, K 0x42d138).</summary>
+    public int ToxinPrice { get; set; } = 2000;
+    /// <summary>The toxin exchange: vials that can be bought a day (0: no limit).</summary>
+    public int ToxinDailyLimit { get; set; } = 5;
+    /// <summary>The Toxin Generator's price in the store, in dollars (the original sold it for real money).</summary>
+    public int ToxinGeneratorPrice { get; set; } = 40000;
+    /// <summary>How many Toxin Generators the cafe may have, stored ones counted (0: no limit).</summary>
+    public int ToxinGeneratorLimit { get; set; } = 2;
+    /// <summary>Vials each Toxin Generator makes a day (it holds 5 until collected).</summary>
+    public int ToxinGeneratorPerDay { get; set; } = 5;
+
     /// <summary>The settings in use (set at start-up).</summary>
     [System.Text.Json.Serialization.JsonIgnore]
     public static Settings Current { get; set; } = new();
@@ -40,6 +52,11 @@ public sealed class Settings
                 s.MusicVolume = Math.Clamp(s.MusicVolume, 0, 100);
                 s.SfxVolume = Math.Clamp(s.SfxVolume, 0, 100);
                 s.HudSize = s.HudSize == 0 ? 100 : Math.Clamp(s.HudSize, HudSizeMin, HudSizeMax);
+                s.ToxinPrice = Math.Max(1, s.ToxinPrice);
+                s.ToxinDailyLimit = Math.Max(0, s.ToxinDailyLimit);
+                s.ToxinGeneratorPrice = Math.Max(0, s.ToxinGeneratorPrice);
+                s.ToxinGeneratorLimit = Math.Max(0, s.ToxinGeneratorLimit);
+                s.ToxinGeneratorPerDay = Math.Max(0, s.ToxinGeneratorPerDay);
                 return s;
             }
         }

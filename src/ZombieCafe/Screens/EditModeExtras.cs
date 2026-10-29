@@ -160,7 +160,8 @@ public sealed partial class EditMode
     /// <summary>Can this piece be bought again from the store (and so be copied)?</summary>
     bool Copyable(FurnitureDef d) =>
         d.ForSale && d.Currency <= 1 && d.ShopTab != 255 && d.Theme != 255 && d.S44 < 1
-        && d.Category is not (FurnitureCategory.Habitat or FurnitureCategory.Tombstone or FurnitureCategory.Expansion or FurnitureCategory.Cash);
+        && d.Category is not (FurnitureCategory.Habitat or FurnitureCategory.Tombstone or FurnitureCategory.Expansion or FurnitureCategory.Cash
+            or FurnitureCategory.ToxinGenerator);
 
     void Copy(Vector2 world)
     {

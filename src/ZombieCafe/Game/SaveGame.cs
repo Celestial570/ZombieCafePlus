@@ -50,6 +50,9 @@ public static class SaveGame
         /// <summary>Frequent Fryer: the last day played and the days in a row (game +0x2c4 / +0x2e8).</summary>
         public string? LastPlayDay { get; set; }
         public int StreakDays { get; set; }
+        /// <summary>The toxin exchange: the day vials were last bought and how many.</summary>
+        public string? ToxinBoughtDay { get; set; }
+        public int ToxinBoughtToday { get; set; }
     }
 
     /// <summary>A pet's record (Pet, 0x50 bytes).</summary>
@@ -322,6 +325,8 @@ public static class SaveGame
             AmptronDay = game.Player.AmptronDay.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture),
             LastPlayDay = game.Player.LastPlayDay?.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture),
             StreakDays = game.Player.StreakDays,
+            ToxinBoughtDay = game.Player.ToxinBoughtDay.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture),
+            ToxinBoughtToday = game.Player.ToxinBoughtToday,
             UnlockedBest = game.Player.UnlockedBest,
         };
         foreach (var o in game.Cafe.Objects)
@@ -498,6 +503,12 @@ public static class SaveGame
                 System.Globalization.DateTimeStyles.None, out var lastDay))
             player.LastPlayDay = lastDay;
         player.StreakDays = Math.Max(0, save.StreakDays);
+        if (DateTime.TryParseExact(save.ToxinBoughtDay, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture,
+                System.Globalization.DateTimeStyles.None, out var toxinDay))
+        {
+            player.ToxinBoughtDay = toxinDay;
+            player.ToxinBoughtToday = Math.Max(0, save.ToxinBoughtToday);
+        }
         player.UnlockedBest = Math.Max(0, save.UnlockedBest);
         save.Neighbours?.ApplyTo(player.Neighbours, data);
         if (save.BoostCharges is { Length: 8 } charges && save.BoostLastUse is { Length: 8 } last)
@@ -532,7 +543,7 @@ public static class SaveGame
             var f = cafe.AddFurniture(fd.Def, u, v);
             if (fd.Orientation != 0)
                 f.SetOrientation(fd.Orientation);
-            if (f.EarnsOverTime)
+            if (f.EarnsOverTime || f.Def.Category == FurnitureCategory.ToxinGenerator)
                 f.Stored = Math.Clamp(fd.Stored, 0, (int)f.Def.S28);
             if (DateTime.TryParseExact(fd.GiftDay, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture,
                     System.Globalization.DateTimeStyles.None, out var giftDay))

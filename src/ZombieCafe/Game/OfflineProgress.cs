@@ -134,7 +134,7 @@ public static class OfflineProgress
         // cash items fill up by their hourly rate, in whole units, to what they hold
         foreach (var o in cafe.Objects)
             if (o is Furniture f && f.EarnsOverTime)
-                f.Stored = (int)Math.Min(f.Stored + (long)f.Def.S26 * elapsedMs / 3_600_000, f.Def.S28);
+                f.Stored = (int)Math.Min(f.Stored + (long)(f.PerHour * elapsedMs / 3_600_000), f.Def.S28);
 
         int seats = cafe.FindFurniture(FurnitureCategory.Chair, -1).Count(ch => cafe.TableInFrontOf(ch) != null);
         int zombies = 0, tipSum = 0;

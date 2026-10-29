@@ -1885,6 +1885,50 @@ public sealed class CafeController : ICafeEvents
         z.Character.Job = Job.Serving;
     }
 
+    // ---------------------------------------------------------------- getting toxin (Two Point extras)
+
+    /// <summary>Toxin Generators in the cafe and in the storage box.</summary>
+    public int ToxinGenerators() =>
+        Cafe.FindFurniture(FurnitureCategory.ToxinGenerator, -1).Count
+        + Cafe.Stored.Count(id => data.Furniture[id].Category == FurnitureCategory.ToxinGenerator);
+
+    /// <summary>Vials the toxin exchange will still sell today (int.MaxValue: no limit).</summary>
+    public int ToxinLeftToday
+    {
+        get
+        {
+            int limit = Settings.Current.ToxinDailyLimit;
+            if (limit <= 0)
+                return int.MaxValue;
+            return Player.ToxinBoughtDay.Date == GameClock.Today ? Math.Max(0, limit - Player.ToxinBoughtToday) : limit;
+        }
+    }
+
+    /// <summary>The toxin exchange: <paramref name="n"/> vials for cash, within today's limit. Why not, or null.</summary>
+    public string? BuyToxin(int n)
+    {
+        int price = Settings.Current.ToxinPrice;
+        if (n < 1)
+            return "";
+        if (n > ToxinLeftToday)
+            return "That's all the toxin for today - come back tomorrow.";
+        if ((long)price * n > Player.Money)
+            return data.Strings[441];
+        if (Player.ToxinBoughtDay.Date != GameClock.Today)
+        {
+            Player.ToxinBoughtDay = GameClock.Today;
+            Player.ToxinBoughtToday = 0;
+        }
+        Player.Money -= price * n;
+        Player.Toxin += n;
+        Player.ToxinBoughtToday += n;
+        // it counts towards a spending quest like any purchase
+        if (Hints.IsShown(0x53))
+            Player.Objectives.Spent(price * n);
+        Sound(8);
+        return null;
+    }
+
     // ---------------------------------------------------------------- the staff panel (Two Point extras)
 
     int autoBreakClock;
@@ -2409,6 +2453,10 @@ public sealed class CafeController : ICafeEvents
     {
         if (def.Theme > Player.Level)
             return data.Strings[587] + def.Theme;
+        // the Toxin Generator (a Two Point extra): only so many, stored ones counted
+        int genLimit = Settings.Current.ToxinGeneratorLimit;
+        if (def.Category == FurnitureCategory.ToxinGenerator && genLimit > 0 && ToxinGenerators() + count > genLimit)
+            return genLimit == 1 ? "You can only have one Toxin Generator." : $"You can only have {genLimit} Toxin Generators.";
         if (def.Currency == 1 ? Player.Toxin < def.Price * count : Player.Money < def.Price * count)
             return def.Currency == 1 ? data.Strings[320].Split('.')[0] + "." : data.Strings[441];
         return null;

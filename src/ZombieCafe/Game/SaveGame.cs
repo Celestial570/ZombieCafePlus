@@ -258,14 +258,14 @@ public static class SaveGame
 
     static readonly JsonSerializerOptions Options = new() { WriteIndented = true };
 
-    public static string DefaultPath
-    {
-        get
-        {
-            var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ZombieCafePC");
-            return Path.Combine(dir, "save.json");
-        }
-    }
+    /// <summary>
+    /// Where the save and settings live. The Two Point build keeps its own, apart from the classic build's
+    /// (%APPDATA%\ZombieCafePC), so the two never write over each other.
+    /// </summary>
+    public static string Folder =>
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ZombieCafePC-TwoPoint");
+
+    public static string DefaultPath => Path.Combine(Folder, "save.json");
 
     /// <summary>A zombie with no place in the cafe (a frozen one): its record alone.</summary>
     static StaffData CaptureRecord(Character c) => new()

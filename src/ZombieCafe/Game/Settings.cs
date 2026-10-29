@@ -29,8 +29,7 @@ public sealed class Settings
     [System.Text.Json.Serialization.JsonIgnore]
     public bool ReadOnly { get; init; }
 
-    static string DefaultPath => Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ZombieCafePC", "settings.json");
+    static string DefaultPath => Path.Combine(SaveGame.Folder, "settings.json");
 
     public static Settings Load()
     {

@@ -1,11 +1,15 @@
-# Zombie Café PC
+# Zombie Cafe Plus
 
 A Windows port of Zombie Café 1.7.0 for iOS, with some extras borrowed from the Two Point games (see below). It runs the game from your own copy of the iOS app: all pictures, sounds, text and game data are read from the `.ipa` file each time it starts, so nothing from the original is included here.
 
+This is an unofficial fan project, not made or endorsed by Capcom. You need your own copy of the game's `.ipa`.
+
+The `main` branch (and the `classic-v1` tag) holds the classic version: the same port without the extras.
+
 ## Running it
 
-1. Put your `ZombieCafe 1.7.0.ipa` in the same folder as `ZombieCafe.exe` (a folder above it works too; the file name must contain "zombie").
-2. Start `ZombieCafe.exe`. To keep the .ipa somewhere else, start it with `ZombieCafe.exe --ipa "C:\Games\ZombieCafe 1.7.0.ipa"`.
+1. Put your `ZombieCafe 1.7.0.ipa` in the same folder as `ZombieCafePlus.exe` (a folder above it works too; the file name must contain "zombie").
+2. Start `ZombieCafePlus.exe`. To keep the .ipa somewhere else, start it with `ZombieCafePlus.exe --ipa "C:\Games\ZombieCafe 1.7.0.ipa"`.
 
 The window can be resized; the interface keeps its layout at any size.
 
@@ -61,8 +65,8 @@ The window can be resized; the interface keeps its layout at any size.
 
 ## Where things are kept
 
-- Saved game: `%APPDATA%\ZombieCafePC-TwoPoint\save.json`; options, including the toxin settings, are in `settings.json` in the same folder (the classic version keeps its own in `%APPDATA%\ZombieCafePC`)
-- Photos taken with the chef's PHOTO button: `Pictures\ZombieCafePC`
+- Saved game: `%APPDATA%\ZombieCafePlus\save.json`; options, including the toxin settings, are in `settings.json` in the same folder (the classic version keeps its own in `%APPDATA%\ZombieCafePC`). The first time it runs, it copies over the save from `%APPDATA%\ZombieCafePC-TwoPoint`, the folder it used before the rename.
+- Photos taken with the chef's PHOTO button: `Pictures\ZombieCafePlus`
 
 ## Not included
 
@@ -76,6 +80,6 @@ With the .NET 8 SDK:
 dotnet publish src/ZombieCafe -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o dist
 ```
 
-This makes `dist/ZombieCafe.exe`, a single file that needs nothing else installed. Put the .ipa next to it.
+This makes `dist/ZombieCafePlus.exe`, a single file that needs nothing else installed. Put the .ipa next to it.
 
 For development, `dotnet build src/ZombieCafe` makes a Debug build with a console window, and `tests/run.sh` replays the scripted tests in `tests/` (each writes a screenshot to `shots/tests/`).

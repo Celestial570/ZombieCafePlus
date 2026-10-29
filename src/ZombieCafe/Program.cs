@@ -15,11 +15,11 @@ static class Program
         var ipa = ipaPath != null ? IpaArchive.TryOpen(ipaPath) : null;
         if (ipa == null)
         {
-            const string missing = "Zombie Cafe needs the original game: put your Zombie Cafe .ipa next to ZombieCafe.exe, or run it with --ipa <path to the .ipa>.";
+            const string missing = "Zombie Cafe Plus needs the original game: put your Zombie Cafe .ipa next to ZombieCafePlus.exe, or run it with --ipa <path to the .ipa>.";
             Console.Error.WriteLine(missing);
             // the release build has no console to print to
             if (OperatingSystem.IsWindows())
-                MessageBoxW(IntPtr.Zero, missing, "Zombie Cafe", 0x10);
+                MessageBoxW(IntPtr.Zero, missing, "Zombie Cafe Plus", 0x10);
             return 1;
         }
 

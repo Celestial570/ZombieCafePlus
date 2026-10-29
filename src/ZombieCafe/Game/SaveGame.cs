@@ -265,11 +265,33 @@ public static class SaveGame
     static readonly JsonSerializerOptions Options = new() { WriteIndented = true };
 
     /// <summary>
-    /// Where the save and settings live. The Two Point build keeps its own, apart from the classic build's
+    /// Where the save and settings live. Zombie Cafe Plus keeps its own, apart from the classic build's
     /// (%APPDATA%\ZombieCafePC), so the two never write over each other.
     /// </summary>
-    public static string Folder =>
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ZombieCafePC-TwoPoint");
+    public static string Folder { get; } = OpenFolder();
+
+    /// <summary>
+    /// The folder, copied the first time from the one it had before the rename (%APPDATA%\ZombieCafePC-TwoPoint),
+    /// which is left as it was.
+    /// </summary>
+    static string OpenFolder()
+    {
+        string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        string folder = Path.Combine(appData, "ZombieCafePlus"), old = Path.Combine(appData, "ZombieCafePC-TwoPoint");
+        if (Directory.Exists(folder) || !Directory.Exists(old))
+            return folder;
+        try
+        {
+            Directory.CreateDirectory(folder);
+            foreach (var f in Directory.GetFiles(old))
+                File.Copy(f, Path.Combine(folder, Path.GetFileName(f)));
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+        {
+            Console.Error.WriteLine($"Could not copy the save from {old}: {e.Message}");
+        }
+        return folder;
+    }
 
     public static string DefaultPath => Path.Combine(Folder, "save.json");
 

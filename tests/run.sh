@@ -5,7 +5,7 @@
 # A test passes when the game runs it to the end without an exception; the screenshots are for looking at.
 set -u
 cd "$(dirname "$0")/.."
-exe=src/ZombieCafe/bin/Debug/net8.0/ZombieCafe.exe
+exe=src/ZombieCafe/bin/Debug/net8.0/ZombieCafePlus.exe
 mkdir -p shots/tests
 names=("$@")
 if [ ${#names[@]} -eq 0 ]; then

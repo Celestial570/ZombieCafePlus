@@ -1112,7 +1112,7 @@ public sealed partial class CafeScreen : GameScreen
     static string PhotoPath()
     {
         string dir = Environment.GetEnvironmentVariable("ZC_PHOTOS") is { Length: > 0 } d ? d
-            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "ZombieCafePC");
+            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "ZombieCafePlus");
         Directory.CreateDirectory(dir);
         return Path.Combine(dir, $"ZombieCafe-{DateTime.Now:yyyyMMdd-HHmmss}.png");
     }

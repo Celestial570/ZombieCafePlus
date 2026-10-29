@@ -42,7 +42,7 @@ public sealed class App
         this.shotFrame = shotFrame;
         Raylib.SetConfigFlags(ConfigFlags.ResizableWindow | ConfigFlags.VSyncHint | ConfigFlags.Msaa4xHint);
         Raylib.SetTraceLogLevel(TraceLogLevel.Warning);
-        Raylib.InitWindow(1280, 800, "Zombie Café");
+        Raylib.InitWindow(1280, 800, "Zombie Cafe Plus");
         Raylib.SetWindowMinSize(800, 500);
         Raylib.SetExitKey(KeyboardKey.Null);
         // mirrored sprites (characters are drawn with a negative x scale) must not be culled

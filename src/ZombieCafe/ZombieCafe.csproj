@@ -7,6 +7,8 @@
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RootNamespace>ZombieCafe</RootNamespace>
+    <AssemblyName>ZombieCafePlus</AssemblyName>
+    <Product>Zombie Cafe Plus</Product>
   </PropertyGroup>
 
   <!-- the release build: no console window, no debug symbols (dotnet publish -c Release, see the README) -->

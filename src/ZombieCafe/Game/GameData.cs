@@ -11,6 +11,9 @@ public sealed class GameData : IDisposable
     public TextureStore Textures { get; }
     public GameConstants K { get; }
     public IReadOnlyList<FurnitureDef> Furniture { get; }
+
+    /// <summary>An item of the port's own, after the game's (the Two Point build's bigger expansions).</summary>
+    public void AddFurniture(FurnitureDef def) => ((List<FurnitureDef>)Furniture).Add(def);
     public IReadOnlyList<CharacterDef> Characters { get; }
     public CharacterAnimations Animations { get; }
     /// <summary>The pets (petData.bin, DAT_0042c664) and their animations (DAT_0042cd14).</summary>

@@ -52,6 +52,8 @@ public sealed class Cafe
     public ICafeEvents Events { get; set; } = null!;
     public int MapWidth { get; }
     public int MapHeight { get; }
+    /// <summary>At least this many rows (the Two Point build's bigger rooms need more map below the original's).</summary>
+    public static int MinMapHeight { get; set; }
     public CafeCell[] Cells { get; }
     public int OriginU { get; private set; }
     public int OriginV { get; private set; }
@@ -101,7 +103,7 @@ public sealed class Cafe
         this.data = data;
         var k = data.K;
         MapWidth = k.MapWidth;
-        MapHeight = k.MapHeight;
+        MapHeight = Math.Max(k.MapHeight, MinMapHeight);
         tileW = k.TileWidth;
         tileH = k.TileHeight;
         stepX = tileW + k.TileSpacingX;

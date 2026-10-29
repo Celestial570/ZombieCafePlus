@@ -59,13 +59,8 @@ static class Program
         Settings.Current = settings;
         // the settings file shows every option, the extras' new ones too
         settings.Save();
-        // Two Point extras: the Toxin Generator in the store for cash (the original sold it for real money)
-        foreach (var d in data.Furniture)
-            if (d.Category == FurnitureCategory.ToxinGenerator && d.ForSale && d.Currency == 2)
-            {
-                d.Price = settings.ToxinGeneratorPrice;
-                d.Currency = 0;
-            }
+        // Two Point extras: the Toxin Generator for cash, and bigger expansions
+        TwoPointStore.Apply(data, settings);
         audio.MusicVolume = settings.MusicVolume / 100f;
         audio.EffectsVolume = settings.SfxVolume / 100f;
         GameScreen first = Arg(args, "--viewer") switch

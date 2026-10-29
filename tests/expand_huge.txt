@@ -1,0 +1,10 @@
+# Two Point store: the 26x25 expansion bought - the room grows at once; then an hour skipped (the cafe saved and restored at that size) (ZC_SKIPTUTORIAL=1 ZC_ROOM=17,16 ZC_MONEY=2000000 ZC_CAM=-13,13,0.22 ZC_HINTS=0x22,0x24,0x25,0x36,0x53)
+20 clickat store
+50 clickat item741
+80 key Escape
+90 key Escape
+110 key Zero
+140 clickat cheat:time
+170 clickat cheat:skip1h
+220 clickat msgok
+240 key Zero

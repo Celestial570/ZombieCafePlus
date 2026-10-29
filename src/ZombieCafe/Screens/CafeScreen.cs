@@ -167,7 +167,7 @@ public sealed partial class CafeScreen : GameScreen
         laidOutFor = size;
         var r = cafe.RoomBounds();
         float fit = MathF.Min(Screen.PixelWidth / r.Width, Screen.PixelHeight / r.Height) * 0.9f;
-        zoom = Math.Clamp(fit, 0.2f, 2f);
+        zoom = Math.Clamp(fit, MinZoom, 2f);
         // ZC_CAM="du,dv,zoom": look at a cell relative to the cafe origin (screenshots of details)
         var cam = Environment.GetEnvironmentVariable("ZC_CAM")?.Split(',');
         if (cam is { Length: 3 } && int.TryParse(cam[0], out int du) && int.TryParse(cam[1], out int dv)

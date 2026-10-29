@@ -19,18 +19,18 @@ public sealed class FurnitureDef
         "sink", "expansion", "toxinBarrel", "tombstone", "toxinGenerator", "billboard", "burnTimeBooster", "habitat",
     ];
 
-    public int Id { get; init; }
+    public int Id { get; set; }
     /// <summary>Decor set (0 basic, 10 asian, 12 generic, ... 255 special).</summary>
     public byte Theme { get; init; }
-    public string Name { get; init; } = "";
+    public string Name { get; set; } = "";
     /// <summary>Image key; with category and per-category image index gives "&lt;prefix&gt;_NNN_&lt;image&gt;.cct".</summary>
     public string Image { get; init; } = "";
     /// <summary>Settable for the Two Point extras (the Toxin Generator sold for cash).</summary>
     public int Price { get; set; }
     /// <summary>0 = cash, 1 = toxin, 2 = other.</summary>
     public byte Currency { get; set; }
-    public byte Width { get; init; }
-    public byte Depth { get; init; }
+    public byte Width { get; set; }
+    public byte Depth { get; set; }
     /// <summary>Image number: the NNN in "&lt;prefix&gt;_NNN_&lt;image&gt;.cct"; for floors the entry in tile.bin. (+0x18)</summary>
     public int ImageIndex { get; init; }
     public byte B1C { get; init; }
@@ -47,7 +47,7 @@ public sealed class FurnitureDef
     /// <summary>Read and discarded by the original loader.</summary>
     public byte Unused { get; init; }
     public float F34 { get; init; }
-    public string Description { get; init; } = "";
+    public string Description { get; set; } = "";
     public float F3C { get; init; }
     public bool ForSale { get; init; }
     /// <summary>Stove family 0..16 (picks pot / burnt pot images); 0 = basic pot.</summary>
@@ -63,6 +63,9 @@ public sealed class FurnitureDef
         (int)Category < Prefixes.Length && Category != FurnitureCategory.Floor
             ? $"{Prefixes[(int)Category]}_{ImageIndex:000}_{Image}"
             : null;
+
+    /// <summary>A copy to change (the Two Point build's extra store items).</summary>
+    public FurnitureDef Copy() => (FurnitureDef)MemberwiseClone();
 
     public static List<FurnitureDef> LoadAll(byte[] file)
     {

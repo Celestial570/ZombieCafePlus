@@ -1,0 +1,1 @@
+# a busy 26x25 cafe at x12 speed: customers, staff resting in the yard, pets - nothing walks off the map (ZC_SKIPTUTORIAL=1 ZC_ROOM=26,25 ZC_AUTOPLAY=1 ZC_AUTOINFECT=1 ZC_SPEED=12 ZC_CAM=-13,13,0.22)

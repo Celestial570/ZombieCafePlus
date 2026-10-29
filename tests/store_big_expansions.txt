@@ -1,0 +1,3 @@
+# Two Point store: with a 17x16 room the special tab offers the new expansions, 18x17 up to 26x25, for cash or toxin (ZC_SKIPTUTORIAL=1 ZC_ROOM=17,16 ZC_MONEY=2000000)
+20 clickat store
+50 at item731

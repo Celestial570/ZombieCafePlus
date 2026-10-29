@@ -44,6 +44,7 @@ The window can be resized; the interface keeps its layout at any size.
   - Undoing a purchase refunds it in full.
   - If its experience already pushed the café up a level, you get the salvage price instead.
 
+- **Bigger cafés.** The store's Special tab goes past the original 17x16, with six more sizes up to 26x25 ($300,000 to $800,000, or 90 to 175 toxin). The map gains extra rows at the bottom to make room; existing saves are unaffected.
 - **Getting toxin.** The original sold toxin for real money; this version has two in-game ways instead:
   - **Toxin exchange.** The + next to your toxin count sells vials for cash, a few a day.
   - **Toxin Generator.** Sold in the store for cash from level 5. It sits in the yard, fills up with vials over the day (it holds 5), and you click it to collect them.

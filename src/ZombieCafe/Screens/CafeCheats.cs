@@ -8,7 +8,7 @@ using ZombieCafe.Ui;
 namespace ZombieCafe.Screens;
 
 /// <summary>
-/// The cheat menu (F1 or `, a port addition): the game's speed, toxin and cash, a level up, the rating, every stove
+/// The cheat menu (the 0 key, a port addition): the game's speed, toxin and cash, a level up, the rating, every stove
 /// done, the staff rested, all recipes and cookbooks, a customer at the door, the rival cafes open again, and the
 /// tutorial skipped. What it changes is saved like anything else.
 /// </summary>
@@ -124,7 +124,7 @@ public sealed partial class CafeScreen
         var r = new Rectangle(90, 70, w, h);
         Widgets.Panel(r);
         Widgets.Label("TIME", r.X + pad, r.Y + 12, Text.GameFont[3], Anchor.Top | Anchor.Left, Widgets.Gold);
-        Widgets.Label("F1 to close", r.X + w - pad, r.Y + 18, Text.GameFont[0], Anchor.Top | Anchor.Right);
+        Widgets.Label("0 to close", r.X + w - pad, r.Y + 18, Text.GameFont[0], Anchor.Top | Anchor.Right);
         float y = r.Y + 58;
         var now = GameClock.Now;
         Widgets.Label(now.ToString("ddd d MMM yyyy  h:mm tt"), r.X + pad, y, Text.GameFont[2]);
@@ -196,7 +196,7 @@ public sealed partial class CafeScreen
         var r = new Rectangle(90, 70, w, h);
         Widgets.Panel(r);
         Widgets.Label("CHEATS", r.X + pad, r.Y + 12, Text.GameFont[3], Anchor.Top | Anchor.Left, Widgets.Gold);
-        Widgets.Label("F1 to close", r.X + w - pad, r.Y + 18, Text.GameFont[0], Anchor.Top | Anchor.Right);
+        Widgets.Label("0 to close", r.X + w - pad, r.Y + 18, Text.GameFont[0], Anchor.Top | Anchor.Right);
 
         // the speed, five steps (the HUD shows it under OPEN / CLOSED when not 1x)
         float y = r.Y + 58;

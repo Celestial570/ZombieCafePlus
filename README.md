@@ -28,7 +28,7 @@ The window can be resized; the interface keeps its layout at any size.
 | Copy the picked-out pieces / paste them as new purchases | Ctrl+C / Ctrl+V (or COPY / PASTE); hold Shift when placing to keep pasting |
 | Salvage the picked-out pieces | Delete (or the SALVAGE button) |
 | Undo what you placed, moved, stored, salvaged or painted | Ctrl+Z (or UNDO), until you leave decorating |
-| Cheat menu (game speed, toxin, cash, level up, finish cooking, rest the staff, all recipes, skip the tutorial, and a Time page to skip hours or days) | F1 or the ` key |
+| Cheat menu (game speed, toxin, cash, level up, finish cooking, rest the staff, all recipes, skip the tutorial, and a Time page to skip hours or days) | 0 (top row or number pad) |
 
 ## Two Point extras
 

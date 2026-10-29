@@ -239,8 +239,9 @@ public sealed partial class CafeScreen : GameScreen
             }
         }
         overClickable = false;
-        // the cheat menu comes and goes with F1 (or the key left of 1)
-        if (Input.IsKeyPressed(KeyboardKey.F1) || Input.IsKeyPressed(KeyboardKey.Grave))
+        // the cheat menu comes and goes with 0 (either one; with Ctrl, 0 puts the HUD back to its usual size)
+        bool ctrl = Input.IsKeyDown(KeyboardKey.LeftControl) || Input.IsKeyDown(KeyboardKey.RightControl);
+        if (!ctrl && (Input.IsKeyPressed(KeyboardKey.Zero) || Input.IsKeyPressed(KeyboardKey.Kp0)))
             ToggleCheats();
         StaffKeys(dt);
         if (!chefMessage.Visible)

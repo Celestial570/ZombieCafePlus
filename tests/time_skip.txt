@@ -2,7 +2,7 @@
 20 clickat chef
 40 clickat stove
 60 clickat recipe0
-90 key F1
+90 key Zero
 120 clickat cheat:time
 150 clickat cheat:skip1h
 200 at msgok

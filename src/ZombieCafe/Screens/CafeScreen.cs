@@ -224,7 +224,7 @@ public sealed partial class CafeScreen : GameScreen
         }
         // the cafe stands still while the chef talks, a box is up, or the recipes or the store are open
         bool paused = chefMessage.Visible || messages.Count > 0 || question != null || RecipesOpen || edit.StoreOpen || bio != null
-            || competitor != null || fridge.Visible || questsOpen || reviewOpen;
+            || competitor != null || fridge.Visible || questsOpen || reviewOpen || Cheats.FreezeCafe;
         if (!paused)
         {
             LevelTips();

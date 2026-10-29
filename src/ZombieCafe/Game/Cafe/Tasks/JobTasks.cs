@@ -263,7 +263,7 @@ public sealed class EatTask : CafeTask
                 if (sub.Success)
                 {
                     state = 1;
-                    Replace(new WaitTask(Owner, Raider ? int.MaxValue : cafe.Data.K.CustomerPatience), false);
+                    Replace(new WaitTask(Owner, Raider || Cheats.PatientCustomers ? int.MaxValue : cafe.Data.K.CustomerPatience), false);
                     cafe.Waiting.Add(Owner);
                     return;
                 }

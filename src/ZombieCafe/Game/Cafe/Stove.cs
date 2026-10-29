@@ -79,7 +79,7 @@ public sealed class Stove : Furniture
             return false;
         if (Burnt)
             return true;
-        if (cafe.BurnMode >= 2 || !Busy)
+        if (cafe.BurnMode >= 2 || !Busy || Cheats.NoBurning)
             return false;
         return (BurnSeconds(cafe) - CookSeconds) * 1000 < BurnClock - Progress;
     }

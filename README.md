@@ -28,7 +28,7 @@ The window can be resized; the interface keeps its layout at any size.
 | Copy the picked-out pieces / paste them as new purchases | Ctrl+C / Ctrl+V (or COPY / PASTE); hold Shift when placing to keep pasting |
 | Salvage the picked-out pieces | Delete (or the SALVAGE button) |
 | Undo what you placed, moved, stored, salvaged or painted | Ctrl+Z (or UNDO), until you leave decorating |
-| Cheat menu (game speed, toxin, cash, level up, finish cooking, rest the staff, all recipes, skip the tutorial, a Time page to skip hours or days, and a Send customer page to pick which customers come in) | 0 (top row or number pad) |
+| Cheat menu: tabs for Main (speed, cash, toxin, levels, rating, tutorial, Time page), Cafe (cooking, cleaning, collecting, fridge, tombstones, customers, Send customer page), Staff (rest, levels, Hire zombie page), Unlock (recipes, cookbooks, chefs, ZombiePedia, quests) and Toggles (infinite energy, free shopping, no level locks, instant cooking, no burning, peaceful zombies, no daydreaming, busy street, patient customers, auto-collect, freeze cafe) | 0 (top row or number pad) |
 
 ## Two Point extras
 

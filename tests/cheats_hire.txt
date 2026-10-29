@@ -1,0 +1,7 @@
+# cheat menu Staff tab: Hire zombie page, three of the first kind join the staff at once (ZC_SKIPTUTORIAL=1 ZC_HINTS=0x22,0x24,0x25,0x36,0x53)
+30 key Zero
+60 clickat cheat:tabstaff
+80 clickat cheat:hire
+110 clickat cheat:send3
+130 clickat cheat:cust0
+200 at cheat:cust0

@@ -204,6 +204,7 @@ public sealed class CafeController : ICafeEvents
         UpdateWorkers(dtMs);
         UpdateStaffBehaviour(dtMs);
         UpdateAutoBreaks(dtMs);
+        CheatToggles();
         UpdateCustomers(dtMs);
         UpdatePets(dtMs);
         UpdateHabitats(dtMs);
@@ -650,7 +651,7 @@ public sealed class CafeController : ICafeEvents
                     z.Boredom -= dtMs;
                     if (z.AttackCheck < 1)
                     {
-                        if (Hungry(z) && Hints.IsShown(0x50))
+                        if (Hungry(z) && Hints.IsShown(0x50) && !Cheats.PeacefulZombies)
                         {
                             z.Interrupt();
                             if (AttackTargets(z.Cell).FirstOrDefault() is { } victim)
@@ -662,6 +663,8 @@ public sealed class CafeController : ICafeEvents
                         }
                         z.AttackCheck = k.Int(0x42d114);
                     }
+                    if (z.Boredom < 1 && Cheats.NoDaydreaming)
+                        z.Boredom = NewBoredom(c);
                     if (z.Boredom < 1)
                     {
                         z.Boredom = NewBoredom(c);
@@ -1444,6 +1447,12 @@ public sealed class CafeController : ICafeEvents
         d.CanBeHuman && d.B20 <= Player.Level && d.F00 <= Player.EffectiveRating
         && !(d.B50 && !data.Foods.Any(f => f.Index >= 0x78 && f.S20 == d.S52 && Player.KnowsRecipe(f.Index)));
 
+    /// <summary>Every kind of zombie a customer can be turned into (the ZombiePedia's list), by level.</summary>
+    public List<CharacterDef> ZombieTypes() => data.Characters
+        .Where(d => d.CanBeZombie && d.B04 != 0 && d.B20 != 255)
+        .OrderBy(d => d.B20).ThenBy(d => d.F00).ThenBy(d => d.Index)
+        .ToList();
+
     /// <summary>Every type of customer there is (human, with a spawn weight; the raid bosses left out), by level.</summary>
     public List<CharacterDef> CustomerTypes() => data.Characters
         .Where(d => d.CanBeHuman && d.B04 > 0 && d.B20 != 255)
@@ -1463,7 +1472,7 @@ public sealed class CafeController : ICafeEvents
         var c = Cafe.AddCharacter(ch, fromA ? Cafe.StreetEndA : Cafe.StreetEndB);
         var k = data.K;
         int chance = (int)(k.EnterChanceMin + (k.EnterChanceMax - k.EnterChanceMin) * Player.EffectiveRating);
-        bool enter = (force || Rng.Next(256) <= chance) && Cafe.IsOpen;
+        bool enter = (force || Cheats.BusyStreet || Rng.Next(256) <= chance) && Cafe.IsOpen;
         c.Entering = enter;
         if (enter)
         {
@@ -1556,7 +1565,7 @@ public sealed class CafeController : ICafeEvents
             SpawnCustomer(true);
             return;
         }
-        spawnTimer -= dtMs;
+        spawnTimer -= Cheats.BusyStreet ? dtMs * 4 : dtMs;
         if (spawnTimer < 0)
             SpawnCustomer(false);
     }
@@ -1883,6 +1892,20 @@ public sealed class CafeController : ICafeEvents
         var k = data.K;
         z.AddTask(new MoveTask(z, Cafe, Cafe.IndexOf(k.PlayerOriginU - 1, k.DoorOffset + k.PlayerOriginV + 1)));
         z.Character.Job = Job.Serving;
+    }
+
+    /// <summary>The cheat menu's toggles that act every frame: instant cooking and auto-collect.</summary>
+    void CheatToggles()
+    {
+        if (!Cheats.InstantCooking && !Cheats.AutoCollect)
+            return;
+        foreach (var o in Cafe.Objects.ToList())
+        {
+            if (Cheats.InstantCooking && o is Stove { Busy: true, IsDone: false, Dish: not null } s && !s.IsBurnt(Cafe))
+                s.FinishNow(Cafe);
+            if (Cheats.AutoCollect && o is Furniture { Stored: > 0 } f && f.Cell >= 0)
+                Collect(f);
+        }
     }
 
     // ---------------------------------------------------------------- getting toxin (Two Point extras)
@@ -2451,13 +2474,13 @@ public sealed class CafeController : ICafeEvents
     /// <summary>Why an item cannot be bought now (null when it can).</summary>
     public string? CannotBuy(FurnitureDef def, int count = 1)
     {
-        if (def.Theme > Player.Level)
+        if (def.Theme > Player.Level && !Cheats.NoLevelLocks)
             return data.Strings[587] + def.Theme;
         // the Toxin Generator (a Two Point extra): only so many, stored ones counted
         int genLimit = Settings.Current.ToxinGeneratorLimit;
         if (def.Category == FurnitureCategory.ToxinGenerator && genLimit > 0 && ToxinGenerators() + count > genLimit)
             return genLimit == 1 ? "You can only have one Toxin Generator." : $"You can only have {genLimit} Toxin Generators.";
-        if (def.Currency == 1 ? Player.Toxin < def.Price * count : Player.Money < def.Price * count)
+        if (!Cheats.FreeShopping && (def.Currency == 1 ? Player.Toxin < def.Price * count : Player.Money < def.Price * count))
             return def.Currency == 1 ? data.Strings[320].Split('.')[0] + "." : data.Strings[441];
         return null;
     }
@@ -2467,7 +2490,10 @@ public sealed class CafeController : ICafeEvents
     {
         if (CannotBuy(def, count) != null)
             return false;
-        if (def.Currency == 1)
+        if (Cheats.FreeShopping)
+        {
+        }
+        else if (def.Currency == 1)
             Player.Toxin -= def.Price * count;
         else
             Player.Money -= def.Price * count;

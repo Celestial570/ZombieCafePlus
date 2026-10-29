@@ -117,7 +117,7 @@ public sealed class Character
     /// <summary>FUN_00034274: staff lose energy while they work (never below 1).</summary>
     public void Drain(GameData data, int dtMs)
     {
-        if (Role != Role.Staff)
+        if (Role != Role.Staff || Cheats.InfiniteEnergy)
             return;
         float lost = data.K.EnergyDrainPerMs * (int)(dtMs * EnergyDrain);
         Energy = Math.Max(1f, Energy - lost);

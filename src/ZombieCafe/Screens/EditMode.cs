@@ -754,7 +754,7 @@ public sealed partial class EditMode
                 continue;
             var d = items[i];
             var card = new Rectangle(x, rowY, cardW, cardH);
-            bool locked = d.Theme > game.Player.Level;
+            bool locked = d.Theme > game.Player.Level && !Cheats.NoLevelLocks;
             bool hover = Raylib.CheckCollisionPointRec(m, card) && x >= rowX - 1 && x + cardW <= rowX + rowW + 1;
             var paper = ui[UiSprites.Paper];
             paper.Draw(x, rowY, Anchor.Top | Anchor.Left, hover && !locked ? Color.White : new Color(225, 220, 210, 255), Flip.None,

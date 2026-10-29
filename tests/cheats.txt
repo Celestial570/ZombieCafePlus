@@ -6,4 +6,5 @@
 160 clickat cheat:levelup
 220 clickat msgok
 260 clickat cheat:speed10
+280 clickat cheat:tabstaff
 300 at cheat:rest

@@ -365,6 +365,10 @@ static class Program
                 foreach (var d in data.Furniture)
                     Console.WriteLine($"{d.Id}\t{d.Category}\ttab {d.ShopTab}\tsale {d.ForSale}\tcur {d.Currency}\t{d.Price}\ttheme {d.Theme}\t{d.Width}x{d.Depth}\trot {d.B1C}\tpet {d.PetId}\tfam {d.StoveFamily}\tb42 {d.B42}\ts44 {d.S44}\t{d.Name}");
                 break;
+            case "chars":
+                foreach (var c in data.Characters)
+                    Console.WriteLine($"{c.Index}	kind {c.Kind}	weight {c.B04}	lvl {c.B20}	rating {c.F00:0.##}	b50 {c.B50}	{c.Name}");
+                break;
             case "foods":
                 foreach (var f in data.Foods)
                     Console.WriteLine($"{f.Index}\tlvl {f.Level}\tkind {f.Kind}\tbook {f.Cookbook}\tb23 {f.B23}\tfam {f.StoveFamily}\ts20 {f.S20}\t{f.Name}");

@@ -1,0 +1,8 @@
+# the cheat menu's Send customer page: all types, page 2, three of the fifth card sent in through the door (ZC_SKIPTUTORIAL=1)
+40 key Zero
+70 clickat cheat:customers
+100 clickat cheat:custall
+120 clickat cheat:custnext
+140 clickat cheat:send3
+160 clickat cheat:cust4
+260 at cheat:cust4

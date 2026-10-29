@@ -1,5 +1,6 @@
 using Raylib_cs;
 using ZombieCafe.Core;
+using ZombieCafe.Data;
 using ZombieCafe.Game;
 using ZombieCafe.Game.Cafe;
 using ZombieCafe.Gfx;
@@ -19,6 +20,11 @@ public sealed partial class CafeScreen
     // the Time page instead of the cheats, and the days its skip covers
     static bool cheatsTimePage;
     static int skipDays = 1;
+    // the Send customer page: which page of types, all types or only those that can come now, how many at a time
+    static bool cheatsCustomerPage, customerShowAll;
+    static int customerPage, customerCount = 1;
+    string? customerNote;
+    float customerNoteTime;
     // where each cheat's button was last drawn (test scripts click "cheat:<key>")
     readonly Dictionary<string, Rectangle> cheatRects = new();
     static readonly float[] CheatSpeeds = [1, 2, 5, 10, 20];
@@ -45,6 +51,7 @@ public sealed partial class CafeScreen
             ("rest", "Rest the staff", true, CheatRestStaff),
             ("recipes", "All recipes", true, CheatAllRecipes),
             ("customer", "Customer now", cafe.IsOpen, () => game.SpawnCustomer(true)),
+            ("customers", "Send customer >", true, () => cheatsCustomerPage = true),
             ("rivals", "Reopen rivals", p.Neighbours.Timers.Any(t => t > 0), () => Array.Clear(p.Neighbours.Timers)),
             ("tutorial", "Skip tutorial", !game.Hints.TutorialDone, CheatSkipTutorial),
             ("time", "Time skip >", SkipTime != null, () => cheatsTimePage = true),
@@ -180,6 +187,116 @@ public sealed partial class CafeScreen
             cheatsTimePage = false;
     }
 
+    /// <summary>
+    /// The Send customer page: every type of customer as a card with its face, a page at a time - only those that can
+    /// come at the cafe's level and rating, or all of them - and how many to send. A card sends that many through the
+    /// door (the cafe must be open).
+    /// </summary>
+    void DrawCustomerCheats()
+    {
+        const float w = 640, pad = 16, gap = 8, cardW = (w - pad * 2 - gap * 2) / 3, cardH = 60, bh = 40;
+        const int cols = 3, rowsPer = 5, perPage = cols * rowsPer;
+        var types = game.CustomerTypes();
+        if (!customerShowAll)
+            types = types.Where(game.CanVisitNow).ToList();
+        int pages = Math.Max(1, (types.Count + perPage - 1) / perPage);
+        customerPage = Math.Clamp(customerPage, 0, pages - 1);
+        float h = 58 + bh + gap + rowsPer * (cardH + gap) + bh + gap + bh + pad + 26;
+        var r = new Rectangle(90, 70, w, h);
+        Widgets.Panel(r);
+        Widgets.Label("SEND A CUSTOMER", r.X + pad, r.Y + 12, Text.GameFont[3], Anchor.Top | Anchor.Left, Widgets.Gold);
+        Widgets.Label("0 to close", r.X + w - pad, r.Y + 18, Text.GameFont[0], Anchor.Top | Anchor.Right);
+        if (customerNoteTime > 0)
+            customerNoteTime -= Raylib.GetFrameTime();
+        float y = r.Y + 58;
+        // which types, and how many at a time
+        var now = new Rectangle(r.X + pad, y, 150, bh);
+        var all = new Rectangle(r.X + pad + 158, y, 150, bh);
+        cheatRects["custnow"] = now;
+        cheatRects["custall"] = all;
+        if (Widgets.Button(now, "Can come now", Text.GameFont[0], customerShowAll))
+        {
+            customerShowAll = false;
+            customerPage = 0;
+        }
+        if (Widgets.Button(all, "All types", Text.GameFont[0], !customerShowAll))
+        {
+            customerShowAll = true;
+            customerPage = 0;
+        }
+        int[] counts = [1, 3, 10];
+        Widgets.Label("Send:", r.X + w - pad - counts.Length * 58 - 8, y + bh / 2, Text.GameFont[1], Anchor.Right | Anchor.VCenter);
+        for (int i = 0; i < counts.Length; i++)
+        {
+            var b = new Rectangle(r.X + w - pad - (counts.Length - i) * 58, y, 50, bh);
+            cheatRects["send" + counts[i]] = b;
+            if (Widgets.Button(b, "x" + counts[i], Text.GameFont[1], customerCount != counts[i]))
+                customerCount = counts[i];
+        }
+        y += bh + gap;
+        // the cards
+        bool open = cafe.IsOpen;
+        int first = customerPage * perPage;
+        for (int i = 0; i < perPage && first + i < types.Count; i++)
+        {
+            var d = types[first + i];
+            var b = new Rectangle(r.X + pad + i % cols * (cardW + gap), y + i / cols * (cardH + gap), cardW, cardH);
+            cheatRects["cust" + i] = b;
+            if (Widgets.Button(b, "", Text.GameFont[0], open))
+            {
+                for (int n = 0; n < customerCount; n++)
+                    game.SpawnCustomer(true, d);
+                game.Sound(36);
+                customerNote = $"Sent {(customerCount == 1 ? "a" : customerCount.ToString())} {d.Name}";
+                customerNoteTime = 3f;
+            }
+            if (CustomerFace(d) is { } face)
+            {
+                float s = MathF.Min(52f / Math.Max(1, face.FullWidth), 52f / Math.Max(1, face.FullHeight));
+                face.Draw(b.X + 32, b.Y + cardH / 2, Anchor.Center, open ? Color.White : new Color(150, 150, 150, 255), Flip.None, s, s);
+            }
+            string name = d.Name.Length > 15 ? d.Name[..14] + "." : d.Name;
+            Widgets.Label(name, b.X + 62, b.Y + 8, Text.GameFont[0]);
+            // when it comes by itself: the level, and the rating in stars when it needs one
+            float stars = d.F00 * 5;
+            string when = $"Lv {Math.Max(1, (int)d.B20)}" + (stars > 0 ? $", {stars:0.#} star{(stars == 1 ? "" : "s")}" : "");
+            bool can = game.CanVisitNow(d);
+            Widgets.Label(can ? when : "Not yet: " + when, b.X + 62, b.Y + 34, 14, Anchor.Top | Anchor.Left,
+                can ? new Color(215, 215, 215, 255) : Widgets.Gold);
+        }
+        y += rowsPer * (cardH + gap);
+        // pages
+        var prev = new Rectangle(r.X + pad, y, 120, bh);
+        var next = new Rectangle(r.X + w - pad - 120, y, 120, bh);
+        cheatRects["custprev"] = prev;
+        cheatRects["custnext"] = next;
+        if (Widgets.Button(prev, "< Prev", Text.GameFont[1], customerPage > 0))
+            customerPage--;
+        Text.DrawAnchored($"Page {customerPage + 1} of {pages}  ({types.Count} types)", r.X + w / 2, y + bh / 2, Text.GameFont[0],
+            Anchor.Center, Color.White, Color.Black, 2);
+        if (Widgets.Button(next, "Next >", Text.GameFont[1], customerPage < pages - 1))
+            customerPage++;
+        y += bh + gap;
+        var back = new Rectangle(r.X + pad, y, w - pad * 2, bh);
+        cheatRects["custback"] = back;
+        if (Widgets.Button(back, "< Back to cheats", Text.GameFont[1]))
+            cheatsCustomerPage = false;
+        y += bh + 4;
+        string status = !open ? "The cafe is closed: click the doorway to open it first."
+            : customerNoteTime > 0 && customerNote != null ? customerNote
+            : "\"Not yet\": would not come by itself at your level and rating.";
+        Widgets.Label(status, r.X + w / 2, y + 2, 15, Anchor.Top | Anchor.HCenter, open ? Widgets.Gold : new Color(255, 150, 130, 255));
+    }
+
+    /// <summary>A customer type's face (its parts sheet's head, K 0x42d618 - the chef store's pictures).</summary>
+    SubImage? CustomerFace(CharacterDef d)
+    {
+        var name = d.PartsSheet(false);
+        var parts = data.Sheet(name, name + ".bin");
+        int i = data.K.Int(0x42d618);
+        return i < parts.Length ? parts[i] : null;
+    }
+
     /// <summary>The menu at the left, under the top bar: the speeds, then the cheats two to a row.</summary>
     void DrawCheats()
     {
@@ -187,6 +304,11 @@ public sealed partial class CafeScreen
         if (cheatsTimePage)
         {
             DrawTimeCheats();
+            return;
+        }
+        if (cheatsCustomerPage)
+        {
+            DrawCustomerCheats();
             return;
         }
         var actions = CheatActions();

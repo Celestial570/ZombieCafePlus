@@ -1420,9 +1420,7 @@ public sealed class CafeController : ICafeEvents
         int total = 0;
         foreach (var d in data.Characters)
         {
-            if (d.B20 > Player.Level || d.F00 > Player.EffectiveRating || !d.CanBeHuman)
-                continue;
-            if (d.B50 && !data.Foods.Any(f => f.Index >= 0x78 && f.S20 == d.S52 && Player.KnowsRecipe(f.Index)))
+            if (!CanVisitNow(d))
                 continue;
             pool.Add(d);
             total += d.B04;
@@ -1441,11 +1439,25 @@ public sealed class CafeController : ICafeEvents
         return pick;
     }
 
-    /// <summary>FUN_000d9744: someone walks down the street; maybe they come in.</summary>
-    public CharacterInstance SpawnCustomer(bool force)
+    /// <summary>FUN_001643ac's test: a customer type that can come at the cafe's level and rating.</summary>
+    public bool CanVisitNow(CharacterDef d) =>
+        d.CanBeHuman && d.B20 <= Player.Level && d.F00 <= Player.EffectiveRating
+        && !(d.B50 && !data.Foods.Any(f => f.Index >= 0x78 && f.S20 == d.S52 && Player.KnowsRecipe(f.Index)));
+
+    /// <summary>Every type of customer there is (human, with a spawn weight; the raid bosses left out), by level.</summary>
+    public List<CharacterDef> CustomerTypes() => data.Characters
+        .Where(d => d.CanBeHuman && d.B04 > 0 && d.B20 != 255)
+        .OrderBy(d => d.B20).ThenBy(d => d.F00).ThenBy(d => d.Index)
+        .ToList();
+
+    /// <summary>
+    /// FUN_000d9744: someone walks down the street; maybe they come in. <paramref name="type"/>: who (the cheat
+    /// menu's Send customer), else a type picked as the original does.
+    /// </summary>
+    public CharacterInstance SpawnCustomer(bool force, CharacterDef? type = null)
     {
         ResetSpawnTimer();
-        var def = PickCustomerType();
+        var def = type ?? PickCustomerType();
         var ch = new Character(def, Role.Customer, false, Character.RandomName(data, def.IsFemale, Rng));
         bool fromA = (Rng.Next() & 1) != 0;
         var c = Cafe.AddCharacter(ch, fromA ? Cafe.StreetEndA : Cafe.StreetEndB);

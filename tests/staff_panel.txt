@@ -1,0 +1,5 @@
+# the staff panel (J): the chef and the zombie with energy and job; the zombie's auto break switched on and sent to rest (ZC_SKIPTUTORIAL=1)
+40 key J
+80 clickat panel:auto1
+110 clickat panel:rest1
+160 at panel:serve1

@@ -203,6 +203,7 @@ public sealed class CafeController : ICafeEvents
         }
         UpdateWorkers(dtMs);
         UpdateStaffBehaviour(dtMs);
+        UpdateAutoBreaks(dtMs);
         UpdateCustomers(dtMs);
         UpdatePets(dtMs);
         UpdateHabitats(dtMs);
@@ -1872,6 +1873,73 @@ public sealed class CafeController : ICafeEvents
         z.Character.Job = Job.Serving;
     }
 
+    // ---------------------------------------------------------------- the staff panel (Two Point extras)
+
+    int autoBreakClock;
+    /// <summary>Auto break: rest from this share of full energy, back to work when full.</summary>
+    const float AutoBreakAt = 0.25f;
+
+    /// <summary>The staff panel's SERVE: back on serving duty (a resting zombie walks back in first).</summary>
+    public void AssignServing(CharacterInstance w)
+    {
+        if (w.IsKnockedOut || w.Character.ReanimateMs >= 1)
+            return;
+        if (w.Character.Job == Job.Resting && w.Character.Role == Role.Staff)
+        {
+            Work(w);
+            return;
+        }
+        w.Interrupt();
+        w.Character.Job = Job.Serving;
+        Hint(3, false);
+    }
+
+    /// <summary>
+    /// The staff panel's COOK: off to the nearest stove that needs someone - a burnt pot to scrub, a finished dish to
+    /// carry, or cooking with nobody at it - as if the stove were clicked with them picked. Why not, or null.
+    /// </summary>
+    public string? SendToStove(CharacterInstance w)
+    {
+        if (w.IsKnockedOut || w.Character.ReanimateMs >= 1)
+            return "";
+        if (StovesHeld)
+            return data.Strings[16];
+        var stoves = Cafe.FindFurniture(FurnitureCategory.Stove, w.Cell).OfType<Stove>()
+            .Where(s => s.Operator == null && CanReach(w, s.Cell)).ToList();
+        var stove = stoves.FirstOrDefault(s => s.IsBurnt(Cafe))
+            ?? stoves.FirstOrDefault(s => s.IsDone)
+            ?? stoves.FirstOrDefault(s => s.Busy && s.AssignedCooks == 0);
+        if (stove == null)
+            return "No stove needs a cook right now - start a recipe first.";
+        var picked = Selected;
+        Selected = w;
+        TapStove(stove);
+        Selected = picked;
+        return null;
+    }
+
+    /// <summary>Once a second: zombies on auto break rest when low and go back to serving when full.</summary>
+    void UpdateAutoBreaks(int dtMs)
+    {
+        autoBreakClock += dtMs;
+        if (autoBreakClock < 1000)
+            return;
+        autoBreakClock = 0;
+        foreach (var z in Staff.ToList())
+        {
+            var c = z.Character;
+            if (!c.AutoBreak || z.IsKnockedOut || c.ReanimateMs >= 1)
+                continue;
+            float max = c.MaxEnergy(data);
+            if (c.Job is Job.Serving or Job.None && z.IsIdle && c.Energy <= max * AutoBreakAt && Rest(z))
+                c.OnBreak = true;
+            else if (c.OnBreak && c.Job == Job.Resting && c.Energy >= max)
+                Work(z);
+            if (c.Job != Job.Resting)
+                c.OnBreak = false;
+        }
+    }
+
     // ---------------------------------------------------------------- staff
 
     /// <summary>How many zombies the player may employ at their level (DAT_0042d5b4).</summary>
@@ -2373,6 +2441,29 @@ public sealed class CafeController : ICafeEvents
     /// <summary>Things a cafe must keep one of (stoves, counters).</summary>
     public bool IsLastOfItsKind(Furniture f) =>
         f.Def.Category is FurnitureCategory.Stove or FurnitureCategory.Counter
-        && Cafe.FindFurniture(f.Def.Category, -1).Count <= 1;
+        && !Cafe.FindFurniture(f.Def.Category, -1).Any(other => other != f);
+
+    /// <summary>
+    /// Undo in decorating mode (a Two Point extra): a purchase taken back - its price returned, and the experience
+    /// and quest spending it brought taken off again. When that experience has already gone into a level up it
+    /// can't be taken back, so the piece is paid for as if salvaged instead (false).
+    /// </summary>
+    public bool Refund(FurnitureDef def)
+    {
+        int xp = Player.Level == data.K.PlayerMaxLevel ? 0 : (int)def.F3C;
+        if (Player.Xp < xp)
+        {
+            Player.Money += SellPrice(def);
+            return false;
+        }
+        Player.Xp -= xp;
+        if (def.Currency == 1)
+            Player.Toxin += def.Price;
+        else
+            Player.Money += def.Price;
+        if (Hints.IsShown(0x53))
+            Player.Objectives.Spent(-(def.Currency == 1 ? data.K.Int(0x42d138) : 1) * def.Price);
+        return true;
+    }
 
 }

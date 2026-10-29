@@ -15,7 +15,7 @@ namespace ZombieCafe.Screens;
 /// wall decorations, paint floors and walls, move, salvage or put away what is already there. The storage box
 /// (Storage, FUN_001b1f60; HUD button 7) is the store's panel showing what was put away, to place again free.
 /// </summary>
-public sealed class EditMode
+public sealed partial class EditMode
 {
     readonly GameData data;
     readonly CafeController game;
@@ -29,7 +29,7 @@ public sealed class EditMode
     int tab = 1;
     float scroll;
 
-    enum Tool { None, Place, Move, WallDecor, Floor, Wall }
+    enum Tool { None, Place, Move, WallDecor, Floor, Wall, Group }
     Tool tool;
     FurnitureDef? def;          // the item being bought / placed
     Furniture? ghost;           // the piece following the mouse
@@ -55,7 +55,7 @@ public sealed class EditMode
     public bool Editing { get; private set; }
 
     /// <summary>Painting tools use left-drag, so the camera should not pan with it.</summary>
-    public bool UsesLeftDrag => tool is Tool.Floor or Tool.Wall;
+    public bool UsesLeftDrag => tool is Tool.Floor or Tool.Wall || boxing;
 
     public void OpenStore(int shopTab = 0)
     {
@@ -87,6 +87,7 @@ public sealed class EditMode
         CancelTool();
         StoreOpen = false;
         Editing = false;
+        EndSession();
     }
 
     void Say(string text)
@@ -133,6 +134,8 @@ public sealed class EditMode
     {
         if (tool != Tool.None)
             CancelTool();
+        else
+            ClearSelection();
     }
 
     /// <summary>The mouse is over a piece that a click would pick up (decorating, nothing in hand).</summary>
@@ -185,6 +188,7 @@ public sealed class EditMode
 
     void CancelTool()
     {
+        CancelGroup();
         if (heldDecor != null && decorFrom != null && decorFrom.Decor == null)
             decorFrom.Hang(cafe, heldDecor);
         heldDecor = null;
@@ -226,6 +230,7 @@ public sealed class EditMode
         // a habitat's pet goes into storage with it
         if (ghost is Habitat home)
             game.PetStored(home);
+        RecordStored([(ghost, fromCell, fromOrientation)]);
         game.Sound(64);
         ghost.TintOverride = null;
         tool = Tool.None;
@@ -259,19 +264,31 @@ public sealed class EditMode
         {
             if (tool != Tool.None)
                 CancelTool();
+            else if (selected.Count > 0)
+                ClearSelection();
             else if (StoreOpen)
                 StoreOpen = false;
             else
+            {
                 Editing = false;
+                EndSession();
+            }
             return;
         }
+        if (!Input.IsMouseButtonDown(MouseButton.Left))
+            EndStroke();
         if (Input.IsKeyPressed(KeyboardKey.R))
             Rotate();
+        if (Shortcuts(world))
+            return;
         var (u, v) = cafe.ScreenToDiamond(world.X, world.Y);
         hoverCell = cafe.IndexOf(u, v);
         hoverWall = null;
         switch (tool)
         {
+            case Tool.Group:
+                UpdateGroup(click);
+                break;
             case Tool.Place:
             case Tool.Move:
                 if (ghost == null || def == null)
@@ -292,6 +309,7 @@ public sealed class EditMode
                 {
                     // a decoration taken down: hung again where clicked, for nothing
                     hoverWall.Hang(cafe, heldDecor);
+                    RecordDecorMoved(heldDecor, decorFrom, hoverWall);
                     game.Sound(90);
                     DropDecor();
                 }
@@ -299,7 +317,9 @@ public sealed class EditMode
                 {
                     // out of the storage box: nothing to pay
                     cafe.Stored.Remove(def.Id);
-                    hoverWall.Hang(cafe, new Furniture(data, def));
+                    var hung = new Furniture(data, def);
+                    hoverWall.Hang(cafe, hung);
+                    RecordDecorFromStorage(hung, hoverWall);
                     game.Sound(90);
                     tool = Tool.None;
                     def = null;
@@ -309,6 +329,7 @@ public sealed class EditMode
                 {
                     var f = new Furniture(data, def);
                     hoverWall.Hang(cafe, f);
+                    RecordDecorBought(f, hoverWall);
                     game.Sound(90);
                     if (game.CannotBuy(def) != null || !Input.IsKeyDown(KeyboardKey.LeftShift))
                         tool = Tool.None;
@@ -319,6 +340,7 @@ public sealed class EditMode
                 hoverOk = hoverWall != null;
                 if (Input.IsMouseButtonDown(MouseButton.Left) && hoverWall != null && def != null && game.Buy(def))
                 {
+                    PaintedWall(hoverWall, def);
                     hoverWall.SetDef(data, def);
                     game.Sound(90);
                 }
@@ -328,11 +350,14 @@ public sealed class EditMode
                     && (cafe.Cells[hoverCell].Floor != def.ImageIndex || cafe.Cells[hoverCell].Tint != def.Tint);
                 if (Input.IsMouseButtonDown(MouseButton.Left) && hoverOk && def != null && game.Buy(def))
                 {
+                    PaintedFloor(hoverCell, def);
                     cafe.SetFloor(hoverCell, def);
                     game.Sound(90);
                 }
                 break;
             case Tool.None:
+                if (UpdateSelection(world, click))
+                    break;
                 if (click)
                 {
                     // pick up a piece of furniture to move or salvage it - also with the store showing, as the
@@ -342,13 +367,25 @@ public sealed class EditMode
                     for (int i = objs.Count - 1; i >= 0; i--)
                         if (objs[i] is Furniture f && f.Cell >= 0 && f.Visible && Hit(f, world))
                         {
-                            PickUp(f);
+                            // one of several picked out with Ctrl: they all come up together
+                            if (selected.Count > 1 && selected.Contains(f))
+                                PickUpGroup(f);
+                            else
+                            {
+                                ClearSelection();
+                                PickUp(f);
+                            }
                             picked = true;
                             break;
                         }
                     // else a decoration on the wall under the mouse
                     if (!picked && DecorUnder(world) is { } decorWall)
+                    {
+                        ClearSelection();
                         PickUpDecor(decorWall);
+                    }
+                    else if (!picked)
+                        ClearSelection();
                 }
                 break;
         }
@@ -391,6 +428,7 @@ public sealed class EditMode
             cafe.PlaceFurniture(ghost, hoverCell);
             if (ghost is Habitat stored)
                 game.PetFromStorage(stored);
+            RecordFromStorage(ghost);
             game.Sound(90);
             tool = Tool.None;
             ghost = null;
@@ -406,23 +444,10 @@ public sealed class EditMode
                 return;
             }
             ghost.TintOverride = null;
-            // FUN_000c0ef4: what is bought is dated (a magic fridge's first free dish comes the day after)
-            ghost.GiftDay = GameClock.Today;
             cafe.PlaceFurniture(ghost, hoverCell);
             game.Sound(90);
-            // FUN_000c0ef4: a special stove bought brings its recipes
-            game.StoveRecipes(def);
-            // FUN_000c0ef4 case 18: a habitat bought brings its pet (FUN_000c2c50)
-            if (ghost is Habitat bought)
-                game.PetPurchased(bought);
-            // FUN_000f5484: a tombstone bought comes with its full uses
-            if (def.Category == FurnitureCategory.Tombstone)
-                game.Player.Boosts.Refill(def.Id);
-            // FUN_000c0ef4: the tutorial waits for a table (0x13) and a chair (0x14)
-            if (def.Category == FurnitureCategory.Table)
-                game.Hint(0x13, true);
-            else if (def.Category == FurnitureCategory.Chair)
-                game.Hint(0x14, true);
+            Bought(ghost);
+            RecordBought([ghost]);
             // keep placing copies while Shift is held and the money lasts (a pet at a time)
             if (Input.IsKeyDown(KeyboardKey.LeftShift) && game.CannotBuy(def) == null && def.Category != FurnitureCategory.Habitat)
             {
@@ -442,11 +467,33 @@ public sealed class EditMode
         // moving
         ghost.TintOverride = null;
         cafe.PlaceFurniture(ghost, hoverCell);
+        RecordMoved([(ghost, fromCell, fromOrientation)]);
         game.Sound(90);
         tool = Tool.None;
         ghost = null;
         def = null;
         fromCell = -1;
+    }
+
+    /// <summary>What comes with a piece bought and placed (FUN_000c0ef4).</summary>
+    void Bought(Furniture f)
+    {
+        var d = f.Def;
+        // what is bought is dated (a magic fridge's first free dish comes the day after)
+        f.GiftDay = GameClock.Today;
+        // a special stove bought brings its recipes
+        game.StoveRecipes(d);
+        // case 18: a habitat bought brings its pet (FUN_000c2c50)
+        if (f is Habitat bought)
+            game.PetPurchased(bought);
+        // FUN_000f5484: a tombstone bought comes with its full uses
+        if (d.Category == FurnitureCategory.Tombstone)
+            game.Player.Boosts.Refill(d.Id);
+        // the tutorial waits for a table (0x13) and a chair (0x14)
+        if (d.Category == FurnitureCategory.Table)
+            game.Hint(0x13, true);
+        else if (d.Category == FurnitureCategory.Chair)
+            game.Hint(0x14, true);
     }
 
     // ---------------------------------------------------------------- drawing
@@ -459,6 +506,7 @@ public sealed class EditMode
             ghost.TintOverride = hoverOk ? new Color(140, 255, 140, 220) : new Color(255, 110, 110, 200);
             ghost.Draw(cafe, data);
         }
+        DrawGroupWorld();
         if (hoverWall != null)
         {
             float left = hoverWall.Side == 0 ? hoverWall.X : hoverWall.X - hoverWall.Width;
@@ -475,14 +523,19 @@ public sealed class EditMode
     public void DrawUi()
     {
         var ui = data.IngameUi;
+        Buttons.Clear();
         StoreButtonRect = null;
         FirstStoredRect = null;
         if (StoreOpen && storage)
             DrawStorage(ui);
         else if (StoreOpen)
             DrawStore(ui);
+        else if (tool == Tool.Group)
+            DrawGroupBar(ui);
         else if (tool != Tool.None)
             DrawToolBar(ui);
+        else if (selected.Count > 0)
+            DrawSelectionBar(ui);
         else
             DrawEditBar(ui);
         if (messageTime > 0 && message != null)
@@ -492,9 +545,12 @@ public sealed class EditMode
     void DrawEditBar(SubImage[] ui)
     {
         // nothing in hand: click furniture to move it; back to the store or out of edit mode
-        var r = new Rectangle(Screen.Width / 2 - 260, Screen.Height - 92, 520, 64);
+        // the store and OK buttons stay where the original bar had them; the extras widen it to the left
+        var r = new Rectangle(Screen.Width / 2 + 260 - 760, Screen.Height - 92, 760, 64);
         Widgets.Panel(r);
-        Widgets.Label("Click furniture to move or salvage it.", r.X + 16, r.Y + 22, 20);
+        Widgets.Label("Click furniture to move or salvage it.", r.X + 16, r.Y + 10, 20);
+        Widgets.Label("Ctrl+click or Ctrl+drag picks out several.", r.X + 16, r.Y + 36, 16, Anchor.Top | Anchor.Left, new Color(210, 210, 210, 255));
+        DrawUndoPaste(r.X + r.Width - 360, r.Y + 12);
         if (Widgets.ImageButton(ui[UiSprites.ShopBag], r.X + r.Width - 100, r.Y + 32, 0.8f))
             StoreOpen = true;
         if (Widgets.ImageButton(ui[UiSprites.Ok], r.X + r.Width - 40, r.Y + 32, 0.55f))
@@ -541,6 +597,7 @@ public sealed class EditMode
                 else
                 {
                     cafe.Stored.Add(heldDecor.Def.Id);
+                    RecordDecorStored(heldDecor, decorFrom);
                     game.Sound(64);
                     DropDecor();
                 }
@@ -551,6 +608,7 @@ public sealed class EditMode
             {
                 int price = game.SellPrice(heldDecor.Def);
                 game.Player.Money += price;
+                RecordDecorSold(heldDecor, decorFrom);
                 game.Sound(8);
                 Say($"{data.Strings[329]}: ${price}");
                 DropDecor();
@@ -574,6 +632,8 @@ public sealed class EditMode
                 // FUN_000c3118: a habitat sold takes its pet with it
                 if (ghost is Habitat sold)
                     game.PetSold(sold);
+                else
+                    RecordSold([(ghost, fromCell, fromOrientation)]);
                 int price = game.SellPrice(ghost.Def);
                 game.Player.Money += price;
                 game.Sound(8);
@@ -859,7 +919,11 @@ public sealed class EditMode
                 if (d.Width <= cafe.RoomWidth && d.Depth <= cafe.RoomDepth)
                     break;
                 if (game.Buy(d))
+                {
                     game.Expand(d);
+                    // the walls are new: what was done to the old ones can't be undone
+                    history.Clear();
+                }
                 break;
             default:
                 StartPlacing(d);

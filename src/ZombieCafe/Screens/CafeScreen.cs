@@ -242,6 +242,7 @@ public sealed partial class CafeScreen : GameScreen
         // the cheat menu comes and goes with F1 (or the key left of 1)
         if (Input.IsKeyPressed(KeyboardKey.F1) || Input.IsKeyPressed(KeyboardKey.Grave))
             ToggleCheats();
+        StaffKeys(dt);
         if (!chefMessage.Visible)
             HandleInput(dt);
         else
@@ -365,6 +366,10 @@ public sealed partial class CafeScreen : GameScreen
             ? Vector2.Transform(f.SolidPoint(), WorldToWindow)
             : null;
         Vector2? Ui(Rectangle? r) => r is { } x ? Screen.ToPixelsPoint(new Vector2(x.X + x.Width / 2, x.Y + x.Height / 2)) : null;
+        if (name.StartsWith("panel:"))
+            return staffRects.TryGetValue(name[6..], out var staffAt) ? Ui(staffAt) : null;
+        if (name.StartsWith("edit:"))
+            return edit.Buttons.TryGetValue(name[5..], out var editAt) ? Ui(editAt) : null;
         if (name.StartsWith("cheat:"))
             return cheatRects.TryGetValue(name[6..], out var cheatAt) ? Ui(cheatAt) : null;
         if (name.StartsWith("tab") && int.TryParse(name[3..], out int tabIndex))
@@ -892,6 +897,14 @@ public sealed partial class CafeScreen : GameScreen
             DrawStoveBar(stoveBar);
         else if (tombstoneBar != null)
             DrawTombstoneBar(tombstoneBar);
+        staffRects.Clear();
+        if (staffOpen)
+        {
+            Widgets.Blocked = messages.Count > 0 || question != null || chefMessage.Visible;
+            DrawStaff();
+            Widgets.Blocked = false;
+        }
+        DrawStaffButton();
         if (cheatsOpen)
         {
             // a box or question up front takes the clicks (the tutorial chef's tips do not, to be skipped)

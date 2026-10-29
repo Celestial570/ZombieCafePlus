@@ -18,6 +18,7 @@ public static class Input
     static Vector2 mouse;
     static readonly bool[] down = new bool[3], pressed = new bool[3], released = new bool[3];
     static readonly HashSet<KeyboardKey> keysPressed = new();
+    static readonly HashSet<KeyboardKey> keysHeld = new();
     static float wheel;
     static readonly List<(int Frame, int Button)> pendingRelease = new();
 
@@ -110,6 +111,18 @@ public static class Input
                     if (Enum.TryParse<KeyboardKey>(e.Args[0], true, out var k))
                         keysPressed.Add(k);
                     break;
+                // a key held over several frames (Ctrl for a Ctrl+click), let go with keyup
+                case "keydown":
+                    if (Enum.TryParse<KeyboardKey>(e.Args[0], true, out var kd))
+                    {
+                        keysHeld.Add(kd);
+                        keysPressed.Add(kd);
+                    }
+                    break;
+                case "keyup":
+                    if (Enum.TryParse<KeyboardKey>(e.Args[0], true, out var ku))
+                        keysHeld.Remove(ku);
+                    break;
                 case "wheel":
                     wheel += F(0);
                     break;
@@ -124,5 +137,5 @@ public static class Input
     public static bool IsMouseButtonReleased(MouseButton b) => script != null ? released[(int)b] : Raylib.IsMouseButtonReleased(b);
     public static float GetMouseWheelMove() => script != null ? wheel : Raylib.GetMouseWheelMove();
     public static bool IsKeyPressed(KeyboardKey k) => script != null ? keysPressed.Contains(k) : Raylib.IsKeyPressed(k);
-    public static bool IsKeyDown(KeyboardKey k) => script != null ? keysPressed.Contains(k) : Raylib.IsKeyDown(k);
+    public static bool IsKeyDown(KeyboardKey k) => script != null ? keysPressed.Contains(k) || keysHeld.Contains(k) : Raylib.IsKeyDown(k);
 }

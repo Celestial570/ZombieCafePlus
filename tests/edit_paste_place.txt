@@ -1,0 +1,12 @@
+# decorating extras: a copied table and chair pasted - bought ($225) and placed where clicked (ZC_SKIPTUTORIAL=1 ZC_HINTS=0x22,0x24,0x25,0x36,0x53)
+30 clickat store
+70 key Escape
+95 at table
+100 keydown LeftControl
+110 clickat table
+130 clickat chair
+150 keyup LeftControl
+170 clickat edit:copy
+200 clickat edit:paste
+230 cell -2 5
+250 clickcell -2 5

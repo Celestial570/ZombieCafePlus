@@ -1,0 +1,4 @@
+# the staff panel's auto break: a tired zombie (10 energy) with auto break switched on goes out back to rest by itself (ZC_SKIPTUTORIAL=1 ZC_STAFF_ENERGY=10)
+40 key J
+80 clickat panel:auto1
+200 at panel:serve1

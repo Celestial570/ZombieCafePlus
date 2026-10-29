@@ -32,7 +32,7 @@ public sealed class Objectives
         public void Add(int n)
         {
             if (Progress < Target)
-                Progress = Math.Min(Target, Progress + n);
+                Progress = Math.Clamp(Progress + n, 0, Target);
         }
     }
 

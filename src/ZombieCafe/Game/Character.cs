@@ -56,6 +56,13 @@ public sealed class Character
     public float Energy { get; set; }
     /// <summary>+0x44.</summary>
     public Job Job { get; set; }
+    /// <summary>
+    /// The staff panel's auto break (a Two Point extra): rests by itself when its energy runs low, and goes back to
+    /// serving once it is full.
+    /// </summary>
+    public bool AutoBreak { get; set; }
+    /// <summary>Resting because auto break sent it (it goes back by itself when full; a rest ordered does not).</summary>
+    public bool OnBreak { get; set; }
     /// <summary>+0x50: facing (0..3).</summary>
     public byte Facing { get; set; }
     /// <summary>+0x54: ms until a knocked-out zombie gets back up (it takes no orders meanwhile).</summary>

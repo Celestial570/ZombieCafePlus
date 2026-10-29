@@ -254,6 +254,9 @@ public static class SaveGame
         public int Deaths { get; set; }
         public int Raids { get; set; }
         public long JoinedUnixMs { get; set; }
+        /// <summary>The staff panel's auto break.</summary>
+        public bool AutoBreak { get; set; }
+        public bool OnBreak { get; set; }
     }
 
     static readonly JsonSerializerOptions Options = new() { WriteIndented = true };
@@ -279,7 +282,7 @@ public static class SaveGame
         Def = c.Def.Index, Name = c.Character.Name, Level = c.Character.Level, Xp = c.Character.Xp,
         Energy = c.Character.Energy, Served = c.Character.Served, Job = c.Character.Job, Cell = c.Cell,
         ReanimateMs = c.Character.ReanimateMs, Kills = c.Character.Kills, Deaths = c.Character.Deaths,
-        Raids = c.Character.Raids, JoinedUnixMs = c.Character.JoinedUnixMs,
+        Raids = c.Character.Raids, JoinedUnixMs = c.Character.JoinedUnixMs, AutoBreak = c.Character.AutoBreak, OnBreak = c.Character.OnBreak,
         CookingStoveCell = c.Tasks.OfType<Cafe.Tasks.CookTask>().FirstOrDefault()?.Stove.Cell ?? -1,
     };
 
@@ -575,6 +578,8 @@ public static class SaveGame
             ch.Kills = sd.Kills;
             ch.Deaths = sd.Deaths;
             ch.Raids = sd.Raids;
+            ch.AutoBreak = sd.AutoBreak;
+            ch.OnBreak = sd.OnBreak;
             if (sd.JoinedUnixMs > 0)
                 ch.JoinedUnixMs = sd.JoinedUnixMs;
             if (sd.Job == Job.Cooking && sd.CookingStoveCell >= 0 && cafe.FurnitureAt(sd.CookingStoveCell) is Stove s)

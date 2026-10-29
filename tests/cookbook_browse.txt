@@ -1,0 +1,2 @@
+# the HUD's cookbook (after the tutorial) opens the recipe book to browse: no COOK button (ZC_SKIPTUTORIAL=1)
+20 clickat cookbook

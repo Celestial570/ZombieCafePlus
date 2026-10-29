@@ -1,0 +1,4 @@
+# the Super Server tombstone: tapped, its bar offers ACTIVATE; switched on, it counts down its two hours (ZC_SKIPTUTORIAL=1 ZC_LEVEL=5 ZC_PLACE=654:-6:7)
+30 clickat tombstone
+50 clickat activate
+70 clickat msgok

@@ -1,0 +1,4 @@
+# PHOTO on the chef's command bar: the cafe without its HUD goes into the photo folder (the shutter sounds), then the chef is picked again (ZC_SKIPTUTORIAL=1 ZC_PHOTOS=shots/photos)
+30 clickat chef
+60 clickat photo
+120 at chef

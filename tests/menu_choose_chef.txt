@@ -1,0 +1,4 @@
+# title screen -> PLAY -> choose a chef -> select -> the new cafe (run with --menu --new)
+60 clickat play
+80 clickat chef3
+100 clickat select

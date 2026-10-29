@@ -1,0 +1,13 @@
+# the Amptron: with all five robot pets along its button by the flag lights up with its summons left; it wants someone inside first; then the robots fold up and the Amptron assembles to fight, its time counting down; picked while it fights the chef, its SPECIAL lands (two left) (ZC_SKIPTUTORIAL=1 ZC_HINTS=0x22,0x24,0x25,0x2b,0x36,0x53,0x5a,0x5b ZC_LEVEL=11 ZC_AMPTRON=3 ZC_PLACE=640:-7:7,641:-6:7,642:-5:7,643:-4:7,644:-3:7)
+30 clickat map
+60 clickat cafe0
+240 clickat ok
+260 clickat amptron
+280 clickat msgok
+300 clickat raider0
+320 clickat attack
+840 clickat amptron
+860 clickat msgok
+1200 clickat amp
+1440 clickat special
+1500 at amp

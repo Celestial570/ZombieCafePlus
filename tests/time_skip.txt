@@ -1,0 +1,8 @@
+# the cheat menu's Time page: with a dish on, skip an hour - the cafe is caught up ("Welcome back" with the hour's customers) and the clock shows the hour gone (ZC_SKIPTUTORIAL=1 ZC_HINTS=0x22,0x24,0x25,0x36,0x53)
+20 clickat chef
+40 clickat stove
+60 clickat recipe0
+90 key F1
+120 clickat cheat:time
+150 clickat cheat:skip1h
+200 at msgok

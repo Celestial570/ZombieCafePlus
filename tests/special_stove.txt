@@ -1,0 +1,10 @@
+# special stoves: a pizza oven standing in the cafe gives its recipe when the cafe loads (announced); tapped, it shows its bar with RECIPES and UPGRADE; UPGRADE offers the Brick Oven for $11,000 and Purchase stands it in the oven's place with its two recipes; then its RECIPES opens the pizza book (ZC_SKIPTUTORIAL=1 ZC_LEVEL=20 ZC_MONEY=50000 ZC_PLACE=391:-3:7 ZC_HINTS=0x22,0x24,0x25,0x36,0x53,0x56,0x58)
+30 clickat msgok
+80 clickat specialstove
+140 clickat upgrade
+200 clickat msgok
+250 clickat msgok
+300 clickat msgok
+350 clickat specialstove
+400 clickat recipes
+460 at recipe0

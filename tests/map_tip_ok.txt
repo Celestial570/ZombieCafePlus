@@ -1,0 +1,5 @@
+# the map's first tip ("that cafe across the street..."): its OK takes a click, then the map can be used - the left arrow scrolls (ZC_SKIPTUTORIAL=1 ZC_HINTS=0x22 ZC_LEVEL=5)
+30 clickat map
+150 clickat ok
+200 clickat left
+260 at back

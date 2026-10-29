@@ -1,0 +1,5 @@
+# the chef's CHEF button opens the chef store; pick a chef from the first page and take it (ZC_SKIPTUTORIAL=1)
+20 clickat chef
+40 clickat chefstore
+70 clickat chef4
+90 clickat select

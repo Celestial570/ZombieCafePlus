@@ -1,0 +1,5 @@
+# a zombie's INFO opens its bio; "Fire Zombie" asks, and yes lets it go (ZC_SKIPTUTORIAL=1)
+20 clickat staff0
+40 clickat info
+70 clickat fire
+90 key Enter

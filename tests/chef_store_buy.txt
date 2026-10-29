@@ -1,0 +1,7 @@
+# chef store at level 10 (opens on the page of the last chef unlocked): the zombie fire chief costs 10 toxin;
+# with 20 toxin it is bought and taken, back in the cafe as the new chef (ZC_SKIPTUTORIAL=1 ZC_LEVEL=10 ZC_TOXIN=20)
+20 clickat chef
+40 clickat chefstore
+70 clickat chef1
+90 clickat select
+110 key Enter

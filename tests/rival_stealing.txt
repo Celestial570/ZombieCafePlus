@@ -1,0 +1,2 @@
+# the rival across the street steals customers: half a minute in, the competitor dialog (ZC_SKIPTUTORIAL=1 ZC_HINTS=0x22 ZC_STEALING=1 ZC_LEVEL=3)
+1 move 0 0

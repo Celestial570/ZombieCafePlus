@@ -1,0 +1,6 @@
+# a third habitat at level 5, where a cafe may keep two pets: it will not go down, and the game says why (ZC_SKIPTUTORIAL=1 ZC_LEVEL=5 ZC_TOXIN=60 ZC_PLACE=615:-2:7,618:-8:3 ZC_CAM=-4,8,0.8)
+8 at store
+10 clickat store
+40 clickat item616
+60 cell -4 7
+64 clickcell -4 7

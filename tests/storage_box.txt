@@ -1,0 +1,15 @@
+# the storage box: a bought chair is picked up and put away, the box (HUD 7) shows it on the FURNITURE tab, and it is placed again for nothing (ZC_SKIPTUTORIAL=1 ZC_LEVEL=3)
+8 at store
+10 clickat store
+30 click 202.1 468.75
+50 click 121.9 636.5
+60 cell -6 4
+64 clickcell -6 4
+90 clickcell -6 4
+110 clickat storeheld
+130 key Escape
+150 clickat storage
+170 clickat tab3
+190 clickat stored0
+200 cell -6 2
+210 clickcell -6 2

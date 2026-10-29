@@ -1,0 +1,10 @@
+# the Amptron comes apart when the raiders retreat: it plays its coming apart and the five robot pets unfold where they folded, back in the fight to walk home (ZC_SKIPTUTORIAL=1 ZC_HINTS=0x22,0x24,0x25,0x2b,0x36,0x53,0x5a,0x5b ZC_LEVEL=11 ZC_AMPTRON=1 ZC_PLACE=640:-7:7,641:-6:7,642:-5:7,643:-4:7,644:-3:7)
+30 clickat map
+60 clickat cafe0
+240 clickat ok
+300 clickat raider0
+320 clickat attack
+840 clickat amptron
+860 clickat msgok
+1250 clickat flag
+1270 clickat msgok

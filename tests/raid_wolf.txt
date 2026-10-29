@@ -1,0 +1,11 @@
+# the Big Bad Wolf: with Little Red along its button by the flag lights up with three transformations; she must be inside first; then she turns into the wolf, which fights with its time counting down (ZC_SKIPTUTORIAL=1 ZC_HINTS=0x22,0x24,0x25,0x2b,0x36,0x53 ZC_LEVEL=13 ZC_ZOMBIES=288)
+30 clickat map
+60 clickat cafe0
+240 clickat ok
+260 clickat wolf
+280 clickat msgok
+300 clickat raider1
+320 clickat attack
+840 clickat wolf
+860 clickat msgok
+1300 at bigwolf

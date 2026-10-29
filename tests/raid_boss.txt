@@ -1,0 +1,4 @@
+# a boss restaurant on the map (the last lot): raid it (ZC_SKIPTUTORIAL=1 ZC_HINTS=0x22,0x24,0x25,0x26,0x35,0x36 ZC_LEVEL=5 ZC_BOSS=1)
+30 clickat map
+60 clickat right
+150 clickat cafe3

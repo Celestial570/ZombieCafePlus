@@ -1,0 +1,11 @@
+# the yeti tombstone in a raid: its button wants someone inside first; once a zombie is in, the yeti spins in as a tornado and turns into the yeti to smash the rivals, its time counting down over it (ZC_SKIPTUTORIAL=1 ZC_HINTS=0x22,0x24,0x25,0x36,0x53 ZC_LEVEL=6 ZC_PLACE=619:-6:7)
+30 clickat map
+60 clickat cafe0
+200 clickat ok
+220 clickat yeti
+240 clickat msgok
+260 clickat raider0
+280 clickat attack
+800 clickat yeti
+820 clickat msgok
+1000 at yeti

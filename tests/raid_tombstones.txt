@@ -1,0 +1,6 @@
+# tombstones in a raid: the strength and energy ones placed give buttons on the right (uses left / a day) and Send all; strength used (ZC_SKIPTUTORIAL=1 ZC_HINTS=0x22,0x24,0x25,0x36 ZC_LEVEL=3 ZC_PLACE=285:-6:7,286:-4:7)
+30 clickat map
+60 clickat cafe0
+200 clickat ok
+230 clickat strength
+250 clickat msgok

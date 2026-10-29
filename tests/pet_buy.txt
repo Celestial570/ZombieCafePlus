@@ -1,0 +1,6 @@
+# the store's Cheshire Cat habitat bought for toxin and set down in the yard: the cat comes out of it (ZC_SKIPTUTORIAL=1 ZC_LEVEL=6 ZC_HINTS=0x53 ZC_TOXIN=60 ZC_CAM=-4,8,0.8)
+8 at store
+10 clickat store
+40 clickat item616
+60 cell -3 7
+64 clickcell -3 7

@@ -1,0 +1,4 @@
+# a shut rival: tap its REOPEN button, pay 2 toxin (ZC_SKIPTUTORIAL=1 ZC_HINTS=0x22,0x24,0x25 ZC_LEVEL=3 ZC_SHUT=1 ZC_TOXIN=5)
+30 clickat map
+50 at reopen0
+60 move 0 0

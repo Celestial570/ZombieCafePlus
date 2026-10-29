@@ -1,0 +1,8 @@
+# a whole raid: in, win, home, and the beaten rival boarded up on the map (ZC_SKIPTUTORIAL=1 ZC_HINTS=0x22,0x24,0x25,0x36 ZC_LEVEL=3)
+30 clickat map
+60 clickat cafe0
+200 clickat ok
+230 clickat raider0
+260 clickat attack
+4250 clickat done
+4400 clickat map

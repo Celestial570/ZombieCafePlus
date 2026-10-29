@@ -1,0 +1,7 @@
+# title screen -> OPTIONS -> drag the music slider to the left (run with --menu --nosave)
+40 clickat options
+60 at music
+62 press left
+64 move 400 260
+66 move 350 260
+70 release left

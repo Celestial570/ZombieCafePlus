@@ -1,0 +1,4 @@
+# the cafe saved and loaded on a trip to the map and back: the habitat and its pet are still there, the pet out in the yard (ZC_SKIPTUTORIAL=1 ZC_LEVEL=6 ZC_HINTS=0x22,0x24,0x25,0x36,0x53 ZC_PLACE=615:-3:7 ZC_CAM=-4,8,0.8)
+30 clickat map
+90 clickat back
+200 clickat pet0

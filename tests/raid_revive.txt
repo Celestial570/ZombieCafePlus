@@ -1,0 +1,11 @@
+# a raid lost, then the knocked-out zombie revived with a vial of toxin: up again with a little energy (ZC_SKIPTUTORIAL=1 ZC_HINTS=0x22,0x24,0x25,0x26,0x35,0x36,0x2b,0x53,0x56,0x58 ZC_LEVEL=10 ZC_SPEED=4)
+30 clickat map
+60 clickat cafe0
+90 clickat raider0
+120 clickat attack
+1150 clickat done
+1220 clickat ok
+1250 clickat staff0
+1280 clickat revive
+1310 clickat msgok
+1340 clickat staff0

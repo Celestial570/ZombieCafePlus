@@ -1,0 +1,8 @@
+# the cookbooks: the HUD's book opens on the General with the books along the chalkboard; the Pirate's, on sale from level 11, is bought for its cash and shows its recipes; a recipe starred goes into the favourites book (ZC_SKIPTUTORIAL=1 ZC_LEVEL=11 ZC_MONEY=20000 ZC_HINTS=0x22,0x24,0x25,0x36,0x53,0x56,0x58)
+30 clickat cookbook
+80 clickat book3
+120 clickat buybook
+150 clickat msgok
+200 clickat star
+240 clickat book0
+280 at book0

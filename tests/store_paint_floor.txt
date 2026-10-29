@@ -1,0 +1,15 @@
+# store -> WALLS/FLOORS -> first card (cheapest floor) -> drag-paint five cells -> leave edit mode (ZC_SKIPTUTORIAL=1)
+8 at store
+10 clickat store
+30 click 464.0 468.75
+50 click 121.9 636.5
+60 cell -6 3
+61 press left
+62 cell -6 3
+64 cell -6 4
+66 cell -6 5
+68 cell -5 5
+70 cell -4 5
+72 release left
+80 key Escape
+90 key Escape

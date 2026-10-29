@@ -1,0 +1,5 @@
+# a stove recipe in the fridge that needs an upgrade of a stove the cafe already has: its yellow button asks for the upgrade in the code's own words ("Please purchase Standard Pizza Oven and upgrade to level two.") (ZC_SKIPTUTORIAL=1 ZC_LEVEL=20 ZC_PLACE=391:-3:7 ZC_FRIDGE=125 ZC_HINTS=0x22,0x24,0x25,0x36,0x53,0x56,0x58)
+30 clickat msgok
+80 clickat fridge
+140 clickat fridgeunlock0
+200 at msgok

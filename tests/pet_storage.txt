@@ -1,0 +1,14 @@
+# a habitat put in the storage box takes its pet along; set down again elsewhere, the same pet comes back out of it (ZC_SKIPTUTORIAL=1 ZC_LEVEL=6 ZC_HINTS=0x53 ZC_PLACE=615:-3:7 ZC_CAM=-4,8,0.8)
+8 at store
+10 clickat store
+30 key Escape
+50 clickcell -3 7
+70 clickat storeheld
+90 key Escape
+110 clickat storage
+130 clickat tab5
+150 clickat stored0
+170 cell -6 7
+180 clickcell -6 7
+300 key Escape
+400 clickat pet0

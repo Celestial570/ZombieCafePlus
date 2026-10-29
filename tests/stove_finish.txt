@@ -1,0 +1,8 @@
+# start a dish, then tap the stove with nobody picked: its bar offers FINISH for toxin (ZC_SKIPTUTORIAL=1)
+20 clickat chef
+40 clickat stove
+60 clickat recipe0
+90 key Escape
+100 clickat stove
+120 clickat finish
+140 key Enter

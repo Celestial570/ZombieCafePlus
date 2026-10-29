@@ -1,0 +1,4 @@
+# a pet sent home with REST: it trots to the front of its habitat, goes in, and the habitat shows it asleep inside (ZC_SKIPTUTORIAL=1 ZC_LEVEL=6 ZC_HINTS=0x53 ZC_PLACE=615:-3:7 ZC_CAM=-4,8,0.8)
+200 clickat pet0
+220 clickat rest
+440 cell -3 9

@@ -1,0 +1,5 @@
+# the store's special tab lists the cafe expansions bigger than the room (ZC_SKIPTUTORIAL=1)
+10 clickat store
+30 clickat tab5
+50 click 118 630
+70 clickat tab5

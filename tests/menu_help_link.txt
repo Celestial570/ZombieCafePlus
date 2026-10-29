@@ -1,0 +1,4 @@
+# title screen -> HELP -> follow the contents' "Cooking" link (run with --menu --nosave)
+40 clickat help
+70 click 530 316
+90 clickat about

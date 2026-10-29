@@ -1,0 +1,2 @@
+# the bonus quests at level 6: the HUD button opens the panel - four tasks, the cafe's stars, BRIBE REVIEWER (ZC_SKIPTUTORIAL=1 ZC_LEVEL=6 ZC_HINTS=0x53)
+30 clickat quests

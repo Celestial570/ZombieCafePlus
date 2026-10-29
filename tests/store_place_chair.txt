@@ -1,0 +1,9 @@
+# open the store, FURNITURE tab, first card (Plain chair), rotate, place it at (u0-6, v0+4) (ZC_SKIPTUTORIAL=1)
+8 at store
+10 clickat store
+30 click 202.1 468.75
+50 click 121.9 636.5
+60 cell -6 4
+62 key R
+64 clickcell -6 4
+80 cell -6 2

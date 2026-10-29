@@ -1,0 +1,37 @@
+# The whole tutorial at ZC_SPEED=10 (run with --new, ZC_SEED=1): welcome -> chef -> stove -> recipe ->
+# food ready -> serve -> infect the customer -> store: table + chair -> level 2 -> cook again -> open the cafe.
+# Named targets (clickat) follow things wherever they are; "ok" is the chef's message button.
+80 clickat ok
+110 clickat chef
+140 clickat stove
+160 clickat recipe0
+1012 clickat ok
+1030 clickat stove
+1100 clickat counter
+1296 clickat ok
+1298 clickat tutorialcustomer
+1312 clickat infect
+1406 clickat ok
+1420 at store
+1424 clickat store
+1506 clickat ok
+1520 click 202 468
+1545 click 310 636
+1555 cell -5 5
+1560 clickcell -5 5
+1590 click 805 737
+1610 click 202 468
+1630 click 122 636
+1640 cell -5 6
+1641 key R
+1643 key R
+1645 clickcell -5 6
+1665 click 868 737
+1705 at msgok
+1710 clickat msgok
+1745 clickat ok
+1760 clickat chef
+1775 clickat stove
+1795 clickat recipe0
+1855 clickat ok
+1870 clickcell -1 4

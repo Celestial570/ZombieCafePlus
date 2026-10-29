@@ -1,0 +1,9 @@
+# the bonus quests: the invite task (done in the port) ticked off, the rest bribed through, then GET REVIEW and the critic's review (ZC_SKIPTUTORIAL=1 ZC_LEVEL=6 ZC_HINTS=0x53 ZC_TOXIN=20)
+30 clickat quests
+50 clickat questfinish3
+70 clickat questbutton
+90 clickat msgok
+110 clickat questfinish0
+120 clickat questfinish1
+130 clickat questfinish2
+150 clickat questbutton

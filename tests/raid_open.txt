@@ -1,0 +1,3 @@
+# a raid from the map: the rival across the street (ZC_SKIPTUTORIAL=1 ZC_HINTS=0x22,0x24,0x25 ZC_LEVEL=3)
+30 clickat map
+60 clickat cafe0

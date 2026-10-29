@@ -1,0 +1,6 @@
+# title -> PLAY -> choose a chef -> cafe -> the HUD logo -> back on the title screen (run with --menu --new --nosave)
+60 clickat play
+80 clickat chef0
+100 clickat select
+240 clickat ok
+270 clickat logo

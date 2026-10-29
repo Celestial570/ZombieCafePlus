@@ -1,0 +1,11 @@
+# build output
+bin/
+obj/
+dist/
+releases/
+.vs/
+*.user
+# screenshots from test runs (they show the game's art)
+shots/
+# the original game is never part of the project
+*.ipa

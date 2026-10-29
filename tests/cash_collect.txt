@@ -1,0 +1,2 @@
+# a vending machine holding $10: tap it, the money goes to the player (ZC_SKIPTUTORIAL=1 ZC_TEST_CASH=1)
+20 clickat cash

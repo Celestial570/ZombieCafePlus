@@ -1,0 +1,5 @@
+# the magic fridge: tapped on a day after its last gift it puts a free batch of a known recipe in the fridge ("A GIFT FROM MAGIC FRIDGE!"); tapped again the same day it opens as an ordinary fridge with the dish in it (ZC_SKIPTUTORIAL=1 ZC_LEVEL=10 ZC_PLACE=248:-3:7 ZC_HINTS=0x22,0x24,0x25,0x36,0x53,0x56,0x58)
+60 clickat magicfridge
+120 clickat msgok
+170 clickat magicfridge
+230 at fridgeclose

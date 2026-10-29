@@ -1,0 +1,8 @@
+# the meat locker: from level 9 its tip points at its HUD button; a zombie's MEATLOCKER hangs it on a hook, the locker shows it, picked it struggles under the spotlight with its stats, REVIVE puts it back on the staff, BACK goes to the cafe (ZC_SKIPTUTORIAL=1 ZC_LEVEL=9 ZC_HINTS=0x22,0x24,0x25,0x36,0x53,0x58)
+360 clickat ok
+400 clickat staff0
+430 clickat freeze
+470 clickat locker
+540 clickat zombie0
+600 clickat revive
+660 clickat back

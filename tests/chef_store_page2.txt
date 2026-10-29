@@ -1,0 +1,5 @@
+# chef store, page 2: zombie chefs for toxin and level-locked ones (ZC_SKIPTUTORIAL=1)
+20 clickat chef
+40 clickat chefstore
+70 clickat next
+90 clickat chef0

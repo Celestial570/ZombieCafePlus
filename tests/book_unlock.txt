@@ -1,0 +1,9 @@
+# recipe book: pick the locked Spicy variant of Mystery Meat, unlock it for toxin (run with ZC_SKIPTUTORIAL=1)
+20 clickat chef
+40 clickat stove
+60 move 555 635
+62 click 555 635
+80 move 985 720
+82 click 985 720
+100 move 530 447
+102 click 530 447

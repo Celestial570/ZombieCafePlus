@@ -1,0 +1,2 @@
+# level 6: after the level-up box, the tip about the bonus quests points at their new HUD button (ZC_SKIPTUTORIAL=1 ZC_LEVEL=5 ZC_XP=150)
+60 clickat msgok

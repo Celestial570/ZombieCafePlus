@@ -1,0 +1,2 @@
+# a level up (3 to 4): the dialog, then the store, map and cookbook badges and the storage box in the side column (ZC_SKIPTUTORIAL=1 ZC_LEVEL=3 ZC_XP=30 ZC_HINTS=0x22)
+60 clickat msgok

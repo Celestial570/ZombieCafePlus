@@ -1,0 +1,3 @@
+# a pet's details from its bar's INFO: the pet standing, its kind and level, what it is, energy, its stats and record; the arrow pages to the next pet (ZC_SKIPTUTORIAL=1 ZC_LEVEL=6 ZC_HINTS=0x53 ZC_PLACE=615:-3:7,616:-5:7 ZC_CAM=-4,8,0.8)
+200 clickat pet0
+220 clickat petinfo

@@ -1,0 +1,4 @@
+# the Frequent Fryer: back the day after with two days in a row before, the third day's reward - a dish for the fridge - with tomorrow's "Mystery Dish"; OK and the fridge has it (ZC_SKIPTUTORIAL=1 ZC_LEVEL=10 ZC_DAYS=2 ZC_HINTS=0x22,0x24,0x25,0x36,0x53,0x56,0x58)
+60 clickat msgok
+120 clickat fridge
+180 at fridgeclose

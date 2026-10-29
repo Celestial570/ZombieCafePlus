@@ -1,0 +1,9 @@
+# the cheat menu (F1): skip the tutorial from its first tip, +100 toxin, +$10,000, a level up (its box), x10 speed; the menu stays up (--new)
+60 key F1
+90 clickat cheat:tutorial
+120 clickat cheat:toxin100
+140 clickat cheat:cash10k
+160 clickat cheat:levelup
+220 clickat msgok
+260 clickat cheat:speed10
+300 at cheat:rest

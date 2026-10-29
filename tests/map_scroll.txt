@@ -1,0 +1,3 @@
+# the map: the right arrow pushes it along to the rivals (ZC_SKIPTUTORIAL=1 ZC_HINTS=0x22 ZC_LEVEL=3)
+30 clickat map
+60 clickat right

@@ -1,0 +1,2 @@
+# a habitat in the yard brings its pet: out it comes and roams the yard; picked, its bar shows its energy, REST and ENERGIZE (ZC_SKIPTUTORIAL=1 ZC_LEVEL=6 ZC_HINTS=0x53 ZC_PLACE=615:-3:7 ZC_CAM=-4,8,0.8)
+300 clickat pet0

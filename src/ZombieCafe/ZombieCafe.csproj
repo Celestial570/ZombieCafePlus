@@ -1,0 +1,240 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RootNamespace>ZombieCafe</RootNamespace>
+  </PropertyGroup>
+
+  <!-- the release build: no console window, no debug symbols (dotnet publish -c Release, see the README) -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <OutputType>WinExe</OutputType>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Raylib-cs" Version="8.1.0" />
+  </ItemGroup>
+
+  <!--
+    The exe's icon: the game's own app icon, taken from the .ipa at build time (the .ipa found in this folder or the
+    ones above it, or IpaPath=...) and packed into an .ico under obj/ - nothing of the game's is kept in the project.
+    Without an .ipa the exe simply builds without an icon.
+  -->
+  <Target Name="ZombieCafeIcon" BeforeTargets="CoreCompile" Condition="'$(OS)' == 'Windows_NT'">
+    <MakeIpaIcon SearchFrom="$(MSBuildProjectDirectory)" IpaPath="$(IpaPath)" Output="$(IntermediateOutputPath)ZombieCafe.ico">
+      <Output TaskParameter="Icon" PropertyName="ZombieCafeIconFile" />
+    </MakeIpaIcon>
+    <PropertyGroup Condition="'$(ZombieCafeIconFile)' != ''">
+      <ApplicationIcon>$(ZombieCafeIconFile)</ApplicationIcon>
+    </PropertyGroup>
+  </Target>
+
+  <UsingTask TaskName="MakeIpaIcon" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <SearchFrom ParameterType="System.String" Required="true" />
+      <IpaPath ParameterType="System.String" />
+      <Output ParameterType="System.String" Required="true" />
+      <Icon ParameterType="System.String" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.IO.Compression" />
+      <Using Namespace="System.Linq" />
+      <Using Namespace="System.Collections.Generic" />
+      <Code Type="Fragment" Language="cs"><![CDATA[
+        // an 8-bit RGB(A) PNG scaled down to size x size: each new pixel the average of the pixels it covers, colour
+        // weighted by alpha - returned as a PNG (null if the picture is not one this can read)
+        byte[] ScalePng(byte[] png, int size)
+        {
+            int p = 8, w = 0, h = 0, type = 0, depth = 0, interlace = 0;
+            var idat = new MemoryStream();
+            while (p + 8 <= png.Length)
+            {
+                int n = (png[p] << 24) | (png[p + 1] << 16) | (png[p + 2] << 8) | png[p + 3];
+                string t = System.Text.Encoding.ASCII.GetString(png, p + 4, 4);
+                if (t == "IHDR")
+                {
+                    w = (png[p + 8] << 24) | (png[p + 9] << 16) | (png[p + 10] << 8) | png[p + 11];
+                    h = (png[p + 12] << 24) | (png[p + 13] << 16) | (png[p + 14] << 8) | png[p + 15];
+                    depth = png[p + 16]; type = png[p + 17]; interlace = png[p + 20];
+                }
+                else if (t == "IDAT")
+                    idat.Write(png, p + 8, n);
+                p += 12 + n;
+            }
+            int bpp = type == 6 ? 4 : type == 2 ? 3 : 0;
+            if (bpp == 0 || depth != 8 || interlace != 0 || w < 2 || h < 2 || w > 4096 || h > 4096)
+                return null;
+            idat.Position = 2;   // past the zlib header: the rest is a raw deflate stream (and its checksum)
+            var raw = new MemoryStream();
+            using (var z = new DeflateStream(idat, CompressionMode.Decompress)) z.CopyTo(raw);
+            byte[] data = raw.ToArray();
+            int stride = w * bpp;
+            if (data.Length < h * (stride + 1))
+                return null;
+            var rgba = new byte[w * h * 4];
+            var prev = new byte[stride];
+            var line = new byte[stride];
+            for (int y = 0, i = 0; y < h; y++)
+            {
+                int f = data[i++];
+                Array.Copy(data, i, line, 0, stride);
+                i += stride;
+                for (int k = 0; k < stride; k++)
+                {
+                    int a = k >= bpp ? line[k - bpp] : 0, b = prev[k], c = k >= bpp ? prev[k - bpp] : 0;
+                    int pred = f == 1 ? a : f == 2 ? b : f == 3 ? (a + b) / 2 : f == 4
+                        ? (Math.Abs(b - c) <= Math.Abs(a - c) && Math.Abs(b - c) <= Math.Abs(a + b - 2 * c) ? a
+                            : Math.Abs(a - c) <= Math.Abs(a + b - 2 * c) ? b : c)
+                        : 0;
+                    line[k] = (byte)(line[k] + pred);
+                }
+                for (int x = 0; x < w; x++)
+                {
+                    int o = (y * w + x) * 4;
+                    rgba[o] = line[x * bpp]; rgba[o + 1] = line[x * bpp + 1]; rgba[o + 2] = line[x * bpp + 2];
+                    rgba[o + 3] = bpp == 4 ? line[x * bpp + 3] : (byte)255;
+                }
+                var swap = prev; prev = line; line = swap;
+            }
+            int hw = size, hh = size;
+            var outRaw = new byte[hh * (hw * 4 + 1)];
+            for (int y = 0; y < hh; y++)
+            {
+                int row = y * (hw * 4 + 1);
+                outRaw[row] = 0;
+                int y0 = y * h / hh, y1 = Math.Max(y0 + 1, (y + 1) * h / hh);
+                for (int x = 0; x < hw; x++)
+                {
+                    int x0 = x * w / hw, x1 = Math.Max(x0 + 1, (x + 1) * w / hw);
+                    long r = 0, g = 0, b = 0, al = 0;
+                    for (int sy = y0; sy < y1; sy++)
+                        for (int sx = x0; sx < x1; sx++)
+                        {
+                            int o = (sy * w + sx) * 4;
+                            int aa = rgba[o + 3];
+                            r += rgba[o] * aa; g += rgba[o + 1] * aa; b += rgba[o + 2] * aa; al += aa;
+                        }
+                    int count = (y1 - y0) * (x1 - x0);
+                    int q = row + 1 + x * 4;
+                    if (al > 0) { outRaw[q] = (byte)(r / al); outRaw[q + 1] = (byte)(g / al); outRaw[q + 2] = (byte)(b / al); }
+                    outRaw[q + 3] = (byte)((al + count / 2) / count);
+                }
+            }
+            var crcTable = new uint[256];
+            for (uint n = 0; n < 256; n++)
+            {
+                uint c = n;
+                for (int k = 0; k < 8; k++) c = (c & 1) != 0 ? 0xEDB88320u ^ (c >> 1) : c >> 1;
+                crcTable[n] = c;
+            }
+            var png2 = new MemoryStream();
+            png2.Write(new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A }, 0, 8);
+            void Chunk(string type2, byte[] body)
+            {
+                var head = System.Text.Encoding.ASCII.GetBytes(type2);
+                png2.Write(new[] { (byte)(body.Length >> 24), (byte)(body.Length >> 16), (byte)(body.Length >> 8), (byte)body.Length }, 0, 4);
+                png2.Write(head, 0, 4);
+                png2.Write(body, 0, body.Length);
+                uint crc = 0xFFFFFFFFu;
+                foreach (byte v in head) crc = crcTable[(crc ^ v) & 0xFF] ^ (crc >> 8);
+                foreach (byte v in body) crc = crcTable[(crc ^ v) & 0xFF] ^ (crc >> 8);
+                crc ^= 0xFFFFFFFFu;
+                png2.Write(new[] { (byte)(crc >> 24), (byte)(crc >> 16), (byte)(crc >> 8), (byte)crc }, 0, 4);
+            }
+            Chunk("IHDR", new byte[] { 0, 0, (byte)(hw >> 8), (byte)hw, 0, 0, (byte)(hh >> 8), (byte)hh, 8, 6, 0, 0, 0 });
+            // zlib = header, raw deflate, Adler-32 of the uncompressed bytes
+            var comp = new MemoryStream();
+            comp.WriteByte(0x78); comp.WriteByte(0x9C);
+            using (var z = new DeflateStream(comp, CompressionLevel.Optimal, true)) z.Write(outRaw, 0, outRaw.Length);
+            uint s1 = 1, s2 = 0;
+            foreach (byte v in outRaw) { s1 = (s1 + v) % 65521; s2 = (s2 + s1) % 65521; }
+            uint adler = (s2 << 16) | s1;
+            comp.Write(new[] { (byte)(adler >> 24), (byte)(adler >> 16), (byte)(adler >> 8), (byte)adler }, 0, 4);
+            Chunk("IDAT", comp.ToArray());
+            Chunk("IEND", new byte[0]);
+            return png2.ToArray();
+        }
+
+        string ipa = !string.IsNullOrEmpty(IpaPath) && File.Exists(IpaPath) ? IpaPath : null;
+        for (var dir = new DirectoryInfo(SearchFrom); ipa == null && dir != null; dir = dir.Parent)
+        {
+            try { ipa = dir.EnumerateFiles("*.ipa").Where(f => f.Name.IndexOf("zombie", StringComparison.OrdinalIgnoreCase) >= 0).Select(f => f.FullName).FirstOrDefault(); }
+            catch (Exception) { }
+        }
+        if (ipa == null)
+        {
+            Log.LogMessage(MessageImportance.High, "No Zombie Cafe .ipa found: the exe is built without an icon.");
+            return true;
+        }
+        if (File.Exists(Output) && File.GetLastWriteTimeUtc(Output) >= File.GetLastWriteTimeUtc(ipa))
+        {
+            Icon = Output;
+            return true;
+        }
+        // every size Windows shows an exe's icon at, all scaled from iTunesArtwork (the 512 px picture at the root of
+        // the .ipa) so each view shows the same picture; PNG frames, which Windows reads from an .ico
+        var frames = new SortedDictionary<int, byte[]>();
+        byte[] art = null;
+        using (var zip = ZipFile.OpenRead(ipa))
+        {
+            var entry = zip.GetEntry("iTunesArtwork");
+            if (entry != null)
+                using (var s = entry.Open()) using (var m = new MemoryStream()) { s.CopyTo(m); art = m.ToArray(); }
+        }
+        if (art != null)
+            foreach (int size in new[] { 16, 20, 24, 32, 40, 48, 64, 96, 128, 256 })
+            {
+                var frame = ScalePng(art, size);
+                if (frame != null)
+                    frames[size] = frame;
+            }
+        // without it, the app icons as they are, one of each size
+        if (frames.Count == 0)
+        using (var zip = ZipFile.OpenRead(ipa))
+        {
+            foreach (var e in zip.Entries)
+            {
+                if (!e.Name.StartsWith("AppIcon") || !e.Name.EndsWith(".png"))
+                    continue;
+                byte[] png;
+                using (var s = e.Open()) using (var m = new MemoryStream()) { s.CopyTo(m); png = m.ToArray(); }
+                if (png.Length < 24 || png[12] != 'I' || png[13] != 'H')
+                    continue;
+                int w = (png[16] << 24) | (png[17] << 16) | (png[18] << 8) | png[19];
+                if (w > 0 && w <= 256 && !frames.ContainsKey(w))
+                    frames[w] = png;
+            }
+        }
+        if (frames.Count == 0)
+        {
+            Log.LogMessage(MessageImportance.High, "No app icon in " + ipa + ": the exe is built without an icon.");
+            return true;
+        }
+        Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(Output)));
+        using (var o = new BinaryWriter(File.Create(Output)))
+        {
+            o.Write((short)0); o.Write((short)1); o.Write((short)frames.Count);
+            int offset = 6 + 16 * frames.Count;
+            foreach (var f in frames)
+            {
+                o.Write((byte)(f.Key == 256 ? 0 : f.Key)); o.Write((byte)(f.Key == 256 ? 0 : f.Key));
+                o.Write((byte)0); o.Write((byte)0); o.Write((short)1); o.Write((short)32);
+                o.Write(f.Value.Length); o.Write(offset);
+                offset += f.Value.Length;
+            }
+            foreach (var f in frames)
+                o.Write(f.Value);
+        }
+        Log.LogMessage(MessageImportance.High, "Icon from " + Path.GetFileName(ipa) + ": " + string.Join(", ", frames.Keys) + " px");
+        Icon = Output;
+      ]]></Code>
+    </Task>
+  </UsingTask>
+
+</Project>

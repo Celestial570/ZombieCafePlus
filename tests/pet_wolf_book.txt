@@ -1,0 +1,3 @@
+# a Wolf of the Steppes in the yard: the recipe book shows the cost 2% lower, in green (cooking still charges the full price, as the original does) (ZC_SKIPTUTORIAL=1 ZC_LEVEL=6 ZC_HINTS=0x53 ZC_PLACE=618:-3:7)
+20 clickat chef
+40 clickat stove

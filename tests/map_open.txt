@@ -1,0 +1,2 @@
+# the map from the cafe's HUD (ZC_SKIPTUTORIAL=1 ZC_HINTS=0x22 ZC_LEVEL=5)
+30 clickat map

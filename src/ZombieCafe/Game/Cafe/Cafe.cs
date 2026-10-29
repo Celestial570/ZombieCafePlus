@@ -801,48 +801,18 @@ public sealed class Cafe
     {
         var k = data.K;
         var c = this;
-        int road = k.RoadWidth;
         int u0 = c.OriginU, v0 = c.OriginV;
-        int Stripe = k.TileRoadStripe, Road = k.TileRoad, Corner = k.TileSidewalkCorner, Curb = k.TileCurb,
-            Sidewalk = k.TileSidewalk;
-        int[] grass = k.GrassTiles.Take(Math.Max(1, k.GrassTileCount)).ToArray();
+        int[] grass = Grass;
 
         for (int i = 0; i < c.Cells.Length; i++)
         {
             var cell = c.Cells[i];
             var (u, v) = c.Diamond(i);
-            bool inRoadU = u0 < u && u < u0 + road + 1;
-            bool inRoadV = v < v0 && v0 - 1 - road < v;
-            if (inRoadU || inRoadV)
+            int street = StreetTile(u, v, out bool flip);
+            if (street >= 0)
             {
-                if (v == v0 - 1 - (road >> 1) && (u <= u0 || u0 + road + 1 <= u))
-                    cell.Floor = Stripe;
-                else if (u != u0 + (road >> 1) + 1 || (v < v0 && v0 - road - 1 < v))
-                    cell.Floor = Road;
-                else
-                {
-                    cell.Floor = Stripe;
-                    cell.Flip = true;
-                }
-                continue;
-            }
-            int curbU = u0 + road + 1, curbV = v0 - road - 1;
-            if ((u == curbU && v == v0) || (v == curbV && u == u0))
-            {
-                cell.Floor = Corner;
-                cell.Flip = v != curbV;
-                continue;
-            }
-            if (u == curbU || v == curbV)
-            {
-                cell.Floor = Curb;
-                cell.Flip = v != curbV;
-                continue;
-            }
-            if (u == u0 || v == v0)
-            {
-                cell.Floor = Sidewalk;
-                cell.Flip = v == v0 || v == curbV;
+                cell.Floor = street;
+                cell.Flip = flip;
                 continue;
             }
             if (u < u0 && !(v0 + h < v || u < u0 - w || v <= v0))
@@ -859,6 +829,88 @@ public sealed class Cafe
         int W = c.MapWidth;
         c.StreetEndA = W * (v0 * 2);
         c.StreetEndB = (W * 2 - u0 * 2 - 1) * W + ((W * 2 - 2) >> 1);
+    }
+
+    int[] Grass => data.K.GrassTiles.Take(Math.Max(1, data.K.GrassTileCount)).ToArray();
+
+    /// <summary>
+    /// LayGround's streets: the road, its stripes, the curbs, corners and sidewalks of the two streets that meet at the
+    /// cafe's corner, for any diamond cell - on the map or past its edges. -1: not street (grass, or the room).
+    /// </summary>
+    int StreetTile(int u, int v, out bool flip)
+    {
+        var k = data.K;
+        int road = k.RoadWidth;
+        int u0 = OriginU, v0 = OriginV;
+        flip = false;
+        bool inRoadU = u0 < u && u < u0 + road + 1;
+        bool inRoadV = v < v0 && v0 - 1 - road < v;
+        if (inRoadU || inRoadV)
+        {
+            if (v == v0 - 1 - (road >> 1) && (u <= u0 || u0 + road + 1 <= u))
+                return k.TileRoadStripe;
+            if (u != u0 + (road >> 1) + 1 || (v < v0 && v0 - road - 1 < v))
+                return k.TileRoad;
+            flip = true;
+            return k.TileRoadStripe;
+        }
+        int curbU = u0 + road + 1, curbV = v0 - road - 1;
+        if ((u == curbU && v == v0) || (v == curbV && u == u0))
+        {
+            flip = v != curbV;
+            return k.TileSidewalkCorner;
+        }
+        if (u == curbU || v == curbV)
+        {
+            flip = v != curbV;
+            return k.TileCurb;
+        }
+        if (u == u0 || v == v0)
+        {
+            flip = v == v0 || v == curbV;
+            return k.TileSidewalk;
+        }
+        return -1;
+    }
+
+    /// <summary>
+    /// The part of the world the camera shows (world space), set by the screen before drawing: the ground is carried
+    /// on past the map's edges over it, so zooming out shows more town rather than black (a port addition).
+    /// </summary>
+    public Rectangle? View { get; set; }
+
+    /// <summary>The streets and grass past the map's edges, over the view (grass picked by a hash, so it stays put).</summary>
+    void DrawGroundBeyond()
+    {
+        if (View is not { } view)
+            return;
+        int[] grass = Grass;
+        int c0 = (int)MathF.Floor((view.X - tileW) / stepX) - 1, c1 = (int)MathF.Ceiling((view.X + view.Width) / stepX) + 1;
+        int r0 = (int)MathF.Floor((view.Y - tileH) * 2 / stepY) - 1, r1 = (int)MathF.Ceiling((view.Y + view.Height) * 2 / stepY) + 1;
+        for (int r = r0; r <= r1; r++)
+            for (int c = c0; c <= c1; c++)
+            {
+                if (r >= 0 && r < MapHeight && c >= 0 && c < MapWidth)
+                    continue;
+                var (u, v) = ToDiamond(c, r);
+                int tile = StreetTile(u, v, out bool flip);
+                if (tile < 0)
+                {
+                    uint hash = (uint)(u * 73856093) ^ (uint)(v * 19349663);
+                    hash ^= hash >> 13;
+                    hash *= 0x5bd1e995;
+                    tile = grass[(int)(hash % (uint)grass.Length)];
+                    flip = (hash & 0x10000) != 0;
+                }
+                if (tile < 0 || tile >= data.Tiles.Length)
+                    continue;
+                var img = data.Tiles[tile];
+                float x = stepX * c + ((r & 1) != 0 ? stepX >> 1 : 0), y = (stepY * r) >> 1;
+                var src = new Rectangle(img.Src.X, img.Src.Y, tileW, tileH);
+                if (flip)
+                    src = new Rectangle(src.X + src.Width, src.Y, -src.Width, src.Height);
+                Gfx.Draw.Image(img.Texture, src, new Rectangle(x, y, tileW, tileH), Color.White);
+            }
     }
 
     /// <summary>The starting room's floor: plain tiles with a hand-placed pattern of stains (tiles 11..28).</summary>
@@ -901,6 +953,7 @@ public sealed class Cafe
     /// <summary>Cafe::draw (FUN_00162128): the floor mesh, then every object in depth order.</summary>
     public void Draw()
     {
+        DrawGroundBeyond();
         for (int i = 0; i < Cells.Length; i++)
         {
             var cell = Cells[i];

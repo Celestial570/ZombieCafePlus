@@ -249,7 +249,7 @@ public sealed class RaidScreen : GameScreen
         {
             Matrix3x2.Invert(WorldToWindow, out var inv);
             var before = Vector2.Transform(mouse, inv);
-            zoom = Math.Clamp(zoom * MathF.Pow(1.15f, wheel), 0.2f, 1.5f);
+            zoom = Math.Clamp(zoom * MathF.Pow(1.15f, wheel), 0.1f, 1.5f);
             Matrix3x2.Invert(WorldToWindow, out inv);
             camera += before - Vector2.Transform(mouse, inv);
         }
@@ -297,6 +297,11 @@ public sealed class RaidScreen : GameScreen
     {
         Raylib.ClearBackground(Color.Black);
         Gfx.Draw.Reset(WorldToWindow);
+        // the world the window shows, for the ground past the map's edges
+        Matrix3x2.Invert(WorldToWindow, out var toWorld);
+        var viewA = Vector2.Transform(Vector2.Zero, toWorld);
+        var viewB = Vector2.Transform(new Vector2(Screen.PixelWidth, Screen.PixelHeight), toWorld);
+        cafe.View = new Rectangle(viewA.X, viewA.Y, viewB.X - viewA.X, viewB.Y - viewA.Y);
         cafe.Draw();
         DrawMarks();
         Gfx.Draw.Reset(Screen.ToPixels);

@@ -21,6 +21,8 @@ public sealed partial class CafeScreen : GameScreen
     Cafe cafe => game.Cafe;
     Vector2 camera;     // world point shown at the window centre
     float zoom = 0.75f; // window pixels per world pixel
+    /// <summary>How far out the wheel zooms (the town carries on past the map's edges, so further than the map).</summary>
+    const float MinZoom = 0.1f;
     Vector2 lastMouse, pressMouse;
     bool dragging, pressed, rightPressed;
     // the mouse is over something a click would act on (the hand cursor)
@@ -350,7 +352,7 @@ public sealed partial class CafeScreen : GameScreen
             // zoom about the cursor
             Matrix3x2.Invert(WorldToWindow, out var inv);
             var before = Vector2.Transform(mouse, inv);
-            zoom = Math.Clamp(zoom * MathF.Pow(1.15f, wheel), 0.2f, 2.5f);
+            zoom = Math.Clamp(zoom * MathF.Pow(1.15f, wheel), MinZoom, 2.5f);
             Matrix3x2.Invert(WorldToWindow, out inv);
             var after = Vector2.Transform(mouse, inv);
             camera += before - after;
@@ -838,6 +840,11 @@ public sealed partial class CafeScreen : GameScreen
     public override void Draw()
     {
         Gfx.Draw.Reset(WorldToWindow);
+        // the world the window shows, for the ground past the map's edges
+        Matrix3x2.Invert(WorldToWindow, out var toWorld);
+        var viewA = Vector2.Transform(Vector2.Zero, toWorld);
+        var viewB = Vector2.Transform(new Vector2(Screen.PixelWidth, Screen.PixelHeight), toWorld);
+        cafe.View = new Rectangle(viewA.X, viewA.Y, viewB.X - viewA.X, viewB.Y - viewA.Y);
         cafe.Draw();
         DrawWorldOverlays();
         if (edit.Active)
